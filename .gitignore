@@ -1,0 +1,7 @@
+node_modules/
+.omc/
+*.log
+.DS_Store
+.env
+.env.*
+*:Zone.Identifier
