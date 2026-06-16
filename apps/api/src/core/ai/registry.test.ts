@@ -38,4 +38,22 @@ describe("aiRegistry", () => {
     });
     expect(out.accepted).toBe(true);
   });
+
+  it("unique_code rejects when code is empty string or missing", async () => {
+    const emptyOut = await aiRegistry.unique_code({
+      value: { code: "" },
+      config: {},
+      ctx: baseCtx,
+    });
+    expect(emptyOut.accepted).toBe(false);
+    expect(emptyOut.validation.reason).toBeDefined();
+
+    const missingOut = await aiRegistry.unique_code({
+      value: {},
+      config: {},
+      ctx: baseCtx,
+    });
+    expect(missingOut.accepted).toBe(false);
+    expect(missingOut.validation.reason).toBeDefined();
+  });
 });
