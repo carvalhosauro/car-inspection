@@ -32,9 +32,9 @@ const valueSchemas = {
   signature: z.object({}).passthrough(),
 } satisfies Record<ProofKind, z.ZodTypeAny>;
 
-export function proofConfigSchema(kind: ProofKind) {
+export function proofConfigSchema<K extends ProofKind>(kind: K): (typeof configSchemas)[K] {
   return configSchemas[kind];
 }
-export function proofValueSchema(kind: ProofKind) {
+export function proofValueSchema<K extends ProofKind>(kind: K): (typeof valueSchemas)[K] {
   return valueSchemas[kind];
 }
