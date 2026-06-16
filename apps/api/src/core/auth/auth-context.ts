@@ -9,6 +9,7 @@ import "./types";
 interface AuthContextOptions {
   accessSecret: string;
   publicRoutes: string[];
+  publicPrefixes?: string[];
 }
 
 // A deferred-resolution transaction: we open db.transaction, hand the tx to the
@@ -47,6 +48,7 @@ export const authContextPlugin = fp<AuthContextOptions>(async (app, opts) => {
   app.addHook("preHandler", async (request) => {
     const url = request.url.split("?")[0];
     if (opts.publicRoutes.includes(url)) return;
+    if (opts.publicPrefixes?.some((p) => url.startsWith(p))) return;
 
     const header = request.headers.authorization;
     if (!header || !header.startsWith("Bearer ")) {
