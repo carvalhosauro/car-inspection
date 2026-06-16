@@ -30,6 +30,7 @@ export function getEnv(): AppEnv {
 // Alias for convenience — evaluated lazily via getter
 export const env = new Proxy({} as AppEnv, {
   get(_target, prop) {
+    if (typeof prop !== "string") return undefined;
     return getEnv()[prop as keyof AppEnv];
   },
 });
