@@ -31,4 +31,18 @@ describe("vision", () => {
     const out = await annotateText(Buffer.from([1]));
     expect(out).toBe("ABC1D23\n45000 km");
   });
+
+  it("annotateText returns null when Vision API throws", async () => {
+    annotateImage.mockRejectedValueOnce(new Error("Vision API error"));
+    const out = await annotateText(Buffer.from([1]));
+    expect(out).toBeNull();
+  });
+
+  it("annotatePhoto returns safe defaults when Vision API throws", async () => {
+    annotateImage.mockRejectedValueOnce(new Error("Vision API error"));
+    const out = await annotatePhoto(Buffer.from([1]));
+    expect(out.labels).toEqual([]);
+    expect(out.objects).toEqual([]);
+    expect(out.safeSearch).toEqual({ adult: "UNKNOWN", violence: "UNKNOWN", racy: "UNKNOWN" });
+  });
 });
