@@ -17,4 +17,12 @@ describe("extractPlate", () => {
   it("returns null when no plate present", () => {
     expect(extractPlate("nenhuma placa aqui 12")).toBeNull();
   });
+
+  it("returns null for substring match ABC1D234 (should be exact match only)", () => {
+    expect(extractPlate("ABC1D234")).toBeNull();
+  });
+
+  it("returns null for substring match ABCD1234 (should be exact match only)", () => {
+    expect(extractPlate("ABCD1234")).toBeNull();
+  });
 });
