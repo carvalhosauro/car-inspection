@@ -33,13 +33,19 @@ export async function vehicleRoutes(app: FastifyInstance): Promise<void> {
       preHandler: guard,
       schema: { querystring: paginationQuerySchema, response: { 200: pageSchema(vehicleDto) } },
     },
-    async (request) => service.list(request.tx, request.query),
+    async (request) => {
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      return service.list(request.tx, request.ctx.tenantId, request.query);
+    },
   );
 
   r.get(
     "/:id",
     { preHandler: guard, schema: { params: idParams, response: { 200: vehicleDto } } },
-    async (request) => service.get(request.tx, request.params.id),
+    async (request) => {
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      return service.get(request.tx, request.params.id, request.ctx.tenantId);
+    },
   );
 
   r.patch(
@@ -48,14 +54,18 @@ export async function vehicleRoutes(app: FastifyInstance): Promise<void> {
       preHandler: guard,
       schema: { params: idParams, body: updateVehicleInput, response: { 200: vehicleDto } },
     },
-    async (request) => service.update(request.tx, request.params.id, request.body),
+    async (request) => {
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      return service.update(request.tx, request.params.id, request.ctx.tenantId, request.body);
+    },
   );
 
   r.delete(
     "/:id",
     { preHandler: guard, schema: { params: idParams } },
     async (request, reply) => {
-      await service.softDelete(request.tx, request.params.id);
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      await service.softDelete(request.tx, request.params.id, request.ctx.tenantId);
       reply.status(204).send();
     },
   );
