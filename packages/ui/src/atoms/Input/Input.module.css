@@ -1,0 +1,13 @@
+.wrapper { display: flex; flex-direction: column; gap: var(--space-xs); }
+.label { font-size: var(--font-small-size); color: var(--color-neutral-600); }
+.field {
+  border: 1px solid var(--color-neutral-300);
+  border-radius: 8px;
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-body-size);
+  color: var(--color-dark);
+  background: var(--color-neutral-white);
+}
+.field[data-state="filled"] { border-color: var(--color-neutral-600); }
+.field[data-state="error"] { border-color: var(--color-error); }
+.error { font-size: var(--font-small-size); color: var(--color-error); }
