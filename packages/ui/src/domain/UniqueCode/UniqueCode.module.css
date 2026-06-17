@@ -1,0 +1,27 @@
+.wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  border: 1px dashed var(--color-primary);
+  border-radius: 8px;
+  padding: var(--space-sm) var(--space-md);
+}
+.code {
+  font-family: monospace;
+  font-size: var(--font-h3-size);
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 1px;
+}
+.copy {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-neutral-600);
+  font-size: var(--font-small-size);
+}
+.copied {
+  font-size: var(--font-small-size);
+  color: var(--color-success);
+  font-weight: 600;
+}
