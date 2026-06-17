@@ -59,6 +59,7 @@ export const BottomNav: FC<BottomNavProps> = ({
           style={[styles.tab, tab.center ? styles.center : null]}
           onPress={() => onTab?.(tab.id)}
         >
+          {/* TODO: add icons via lucide-react-native (not installed) */}
           <Text
             style={[
               styles.label,

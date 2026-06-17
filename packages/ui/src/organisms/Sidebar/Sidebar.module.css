@@ -19,10 +19,15 @@
   margin-bottom: var(--space-md);
 }
 
+.sidebar[data-collapsed="true"] .logo {
+  text-align: center;
+}
+
 .link {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  min-height: 44px;
   border: none;
   background: transparent;
   color: var(--color-neutral-300);
@@ -34,6 +39,16 @@
   width: 100%;
 }
 
+.link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-neutral-white);
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
 .link[aria-current="page"] {
   background: var(--color-primary);
   color: var(--color-neutral-white);
@@ -41,6 +56,11 @@
 
 .label {
   white-space: nowrap;
+}
+
+.sidebar[data-collapsed="true"] .link {
+  justify-content: center;
+  padding: var(--space-sm);
 }
 
 .sidebar[data-collapsed="true"] .label {
