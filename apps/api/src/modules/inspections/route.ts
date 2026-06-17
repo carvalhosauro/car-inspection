@@ -41,9 +41,11 @@ export async function inspectionRoutes(app: FastifyInstance): Promise<void> {
     "/inspections",
     { preHandler: manage, schema: { querystring: listQuery, response: { 200: pageSchema(inspectionDto) } } },
     async (request) => {
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
       const q = request.query;
       return service.list(
         request.tx,
+        request.ctx.tenantId,
         {
           status: q.status,
           inspectorId: q.inspector,
@@ -59,26 +61,59 @@ export async function inspectionRoutes(app: FastifyInstance): Promise<void> {
   r.get(
     "/inspections/:id",
     { preHandler: execute, schema: { params: idParams, response: { 200: inspectionDto } } },
-    async (request) => service.getById(request.tx, request.params.id),
+    async (request) => {
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      return service.getById(request.tx, request.ctx.tenantId, request.params.id);
+    },
+  );
+
+  r.get(
+    "/inspections/:id/audit",
+    {
+      preHandler: manage,
+      schema: {
+        params: idParams,
+        response: {
+          200: z.object({
+            auditedBy: z.string().uuid().nullable(),
+            auditNote: z.string().nullable(),
+            auditedAt: z.string().datetime().nullable(),
+            result: z.enum(["conforme", "com_pendencias"]).nullable(),
+          }),
+        },
+      },
+    },
+    async (request) => {
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      return service.getAudit(request.tx, request.ctx.tenantId, request.params.id);
+    },
   );
 
   r.patch(
     "/inspections/:id/audit",
     { preHandler: manage, schema: { params: idParams, body: auditInput, response: { 200: inspectionDto } } },
-    async (request) =>
-      service.audit(request.tx, request.params.id, request.ctx.userId, request.body),
+    async (request) => {
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      return service.audit(request.tx, request.ctx.tenantId, request.params.id, request.ctx.userId, request.body);
+    },
   );
 
   r.post(
     "/inspections/:id/start",
     { preHandler: execute, schema: { params: idParams, response: { 200: inspectionDto } } },
-    async (request) => service.start(request.tx, request.params.id),
+    async (request) => {
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      return service.start(request.tx, request.ctx.tenantId, request.params.id);
+    },
   );
 
   r.get(
     "/inspections/:id/items",
     { preHandler: execute, schema: { params: idParams, response: { 200: z.array(inspectionItemDto) } } },
-    async (request) => service.items(request.tx, request.params.id),
+    async (request) => {
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      return service.items(request.tx, request.ctx.tenantId, request.params.id);
+    },
   );
 
   r.post(
@@ -91,7 +126,10 @@ export async function inspectionRoutes(app: FastifyInstance): Promise<void> {
         response: { 200: inspectionDto },
       },
     },
-    async (request) => service.finish(request.tx, request.params.id, request.body),
+    async (request) => {
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      return service.finish(request.tx, request.ctx.tenantId, request.params.id, request.body);
+    },
   );
 
   r.get(
@@ -103,12 +141,18 @@ export async function inspectionRoutes(app: FastifyInstance): Promise<void> {
         response: { 200: z.object({ items: z.array(inspectionDto) }) },
       },
     },
-    async (request) => service.myToday(request.tx, request.ctx.userId),
+    async (request) => {
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      return service.myToday(request.tx, request.ctx.tenantId, request.ctx.userId);
+    },
   );
 
   r.get(
     "/me/inspections/history",
     { preHandler: execute, schema: { querystring: paginationQuerySchema, response: { 200: pageSchema(inspectionDto) } } },
-    async (request) => service.myHistory(request.tx, request.ctx.userId, request.query),
+    async (request) => {
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      return service.myHistory(request.tx, request.ctx.tenantId, request.ctx.userId, request.query);
+    },
   );
 }

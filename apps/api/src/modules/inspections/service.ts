@@ -43,6 +43,9 @@ type InspectionRow = {
   geoLat: string | null;
   geoLng: string | null;
   uniqueCode: string | null;
+  auditedBy: string | null;
+  auditNote: string | null;
+  auditedAt: Date | null;
   createdAt: Date;
 };
 
@@ -155,24 +158,24 @@ function evToDto(row: {
   };
 }
 
-export async function getById(tx: Tx, id: string): Promise<InspectionDto> {
-  const row = await getInspection(tx, id);
+export async function getById(tx: Tx, tenantId: string, id: string): Promise<InspectionDto> {
+  const row = await getInspection(tx, tenantId, id);
   if (!row) throw errors.notFound("Inspection not found");
   return toDto(row as InspectionRow);
 }
 
-export async function items(tx: Tx, inspectionId: string): Promise<InspectionItemDto[]> {
-  const insp = await getInspection(tx, inspectionId);
+export async function items(tx: Tx, tenantId: string, inspectionId: string): Promise<InspectionItemDto[]> {
+  const insp = await getInspection(tx, tenantId, inspectionId);
   if (!insp) throw errors.notFound("Inspection not found");
-  const rows = await listInspectionItems(tx, inspectionId);
+  const rows = await listInspectionItems(tx, tenantId, inspectionId);
   return Promise.all(rows.map((row) => itemToDto(tx, row)));
 }
 
-export async function start(tx: Tx, id: string): Promise<InspectionDto> {
-  const insp = await getInspection(tx, id);
+export async function start(tx: Tx, tenantId: string, id: string): Promise<InspectionDto> {
+  const insp = await getInspection(tx, tenantId, id);
   if (!insp) throw errors.notFound("Inspection not found");
   if (insp.status !== "atribuida") throw errors.unprocessable("Inspection already started");
-  const row = await updateInspection(tx, id, {
+  const row = await updateInspection(tx, tenantId, id, {
     status: "em_andamento",
     startedAt: new Date(),
   });
@@ -181,10 +184,11 @@ export async function start(tx: Tx, id: string): Promise<InspectionDto> {
 
 export async function finish(
   tx: Tx,
+  tenantId: string,
   id: string,
   geo: { geoLat: number; geoLng: number },
 ): Promise<InspectionDto> {
-  const insp = await getInspection(tx, id);
+  const insp = await getInspection(tx, tenantId, id);
   if (!insp) throw errors.notFound("Inspection not found");
   if (insp.status !== "em_andamento") throw errors.unprocessable("Inspection is not in progress");
 
@@ -196,10 +200,10 @@ export async function finish(
   const slug = tenant[0]?.slug ?? "tenant";
   const uniqueCode = `VST-${slug}-${ulid()}`;
 
-  const allItems = await listInspectionItems(tx, id);
+  const allItems = await listInspectionItems(tx, tenantId, id);
   const hasNonConforme = allItems.some((i) => i.status === "nao_conforme");
 
-  const row = await updateInspection(tx, id, {
+  const row = await updateInspection(tx, tenantId, id, {
     status: "concluida",
     result: hasNonConforme ? "com_pendencias" : "conforme",
     finishedAt: new Date(),
@@ -212,16 +216,17 @@ export async function finish(
 
 export async function audit(
   tx: Tx,
+  tenantId: string,
   id: string,
   auditedBy: string,
   input: AuditInput,
 ): Promise<InspectionDto> {
-  const insp = await getInspection(tx, id);
+  const insp = await getInspection(tx, tenantId, id);
   if (!insp) throw errors.notFound("Inspection not found");
   if (insp.status !== "concluida") {
     throw errors.unprocessable("Only a concluded inspection can be audited");
   }
-  const row = await updateInspection(tx, id, {
+  const row = await updateInspection(tx, tenantId, id, {
     status: input.decision,
     auditedBy,
     auditNote: input.auditNote ?? null,
@@ -230,12 +235,29 @@ export async function audit(
   return toDto(row as InspectionRow);
 }
 
+export async function getAudit(
+  tx: Tx,
+  tenantId: string,
+  id: string,
+): Promise<{ auditedBy: string | null; auditNote: string | null; auditedAt: string | null; result: InspectionDto["result"] }> {
+  const row = await getInspection(tx, tenantId, id);
+  if (!row) throw errors.notFound("Inspection not found");
+  const insp = row as InspectionRow;
+  return {
+    auditedBy: insp.auditedBy ?? null,
+    auditNote: insp.auditNote ?? null,
+    auditedAt: insp.auditedAt ? insp.auditedAt.toISOString() : null,
+    result: insp.result,
+  };
+}
+
 export async function list(
   tx: Tx,
+  tenantId: string,
   filter: InspectionFilter,
   query: PaginationQuery,
 ): Promise<{ items: InspectionDto[]; nextCursor: string | null }> {
-  const rows = await listInspections(tx, filter, query.cursor, query.limit);
+  const rows = await listInspections(tx, tenantId, filter, query.cursor, query.limit);
   const hasMore = rows.length > query.limit;
   const page = hasMore ? rows.slice(0, query.limit) : rows;
   return {
@@ -246,6 +268,7 @@ export async function list(
 
 export async function myToday(
   tx: Tx,
+  tenantId: string,
   inspectorId: string,
 ): Promise<{ items: InspectionDto[] }> {
   const now = new Date();
@@ -257,8 +280,9 @@ export async function myToday(
 
 export async function myHistory(
   tx: Tx,
+  tenantId: string,
   inspectorId: string,
   query: PaginationQuery,
 ): Promise<{ items: InspectionDto[]; nextCursor: string | null }> {
-  return list(tx, { inspectorId }, query);
+  return list(tx, tenantId, { inspectorId }, query);
 }

@@ -86,20 +86,20 @@ export async function insertInspectionItem(
   return rows[0]!;
 }
 
-export async function getInspection(tx: Tx, id: string) {
+export async function getInspection(tx: Tx, tenantId: string, id: string) {
   const rows = await tx
     .select()
     .from(schema.inspections)
-    .where(eq(schema.inspections.id, id))
+    .where(and(eq(schema.inspections.tenantId, tenantId), eq(schema.inspections.id, id)))
     .limit(1);
   return rows[0];
 }
 
-export async function listInspectionItems(tx: Tx, inspectionId: string) {
+export async function listInspectionItems(tx: Tx, tenantId: string, inspectionId: string) {
   return tx
     .select()
     .from(schema.inspectionItems)
-    .where(eq(schema.inspectionItems.inspectionId, inspectionId))
+    .where(and(eq(schema.inspectionItems.tenantId, tenantId), eq(schema.inspectionItems.inspectionId, inspectionId)))
     .orderBy(asc(schema.inspectionItems.order), asc(schema.inspectionItems.id));
 }
 
@@ -113,13 +113,14 @@ export async function listItemEvidences(tx: Tx, inspectionItemId: string) {
 
 export async function updateInspection(
   tx: Tx,
+  tenantId: string,
   id: string,
   data: Record<string, unknown>,
 ) {
   const rows = await tx
     .update(schema.inspections)
     .set(data)
-    .where(eq(schema.inspections.id, id))
+    .where(and(eq(schema.inspections.tenantId, tenantId), eq(schema.inspections.id, id)))
     .returning();
   return rows[0];
 }
@@ -134,11 +135,12 @@ export interface InspectionFilter {
 
 export async function listInspections(
   tx: Tx,
+  tenantId: string,
   filter: InspectionFilter,
   cursor: string | undefined,
   limit: number,
 ) {
-  const conds = [];
+  const conds = [eq(schema.inspections.tenantId, tenantId)];
   if (filter.status) conds.push(eq(schema.inspections.status, filter.status as never));
   if (filter.inspectorId) conds.push(eq(schema.inspections.inspectorId, filter.inspectorId));
   if (filter.vehicleId) conds.push(eq(schema.inspections.vehicleId, filter.vehicleId));
@@ -148,7 +150,7 @@ export async function listInspections(
   return tx
     .select()
     .from(schema.inspections)
-    .where(conds.length ? and(...conds) : undefined)
+    .where(and(...conds))
     .orderBy(asc(schema.inspections.id))
     .limit(limit + 1);
 }
