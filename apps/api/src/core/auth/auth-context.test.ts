@@ -18,7 +18,7 @@ async function buildMini() {
     const r = await request.tx.execute(
       sql`SELECT current_setting('app.tenant_id', true) AS tid, current_setting('app.role', true) AS role`,
     );
-    const row = (r as unknown as { rows: { tid: string; role: string }[] }).rows[0];
+    const row = (r as unknown as { rows: { tid: string; role: string }[] }).rows[0]!;
     return { tid: row.tid, role: row.role, userId: request.ctx.userId };
   });
   app.get("/v1/auth/login", async () => ({ ok: true }));

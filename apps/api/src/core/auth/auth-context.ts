@@ -46,7 +46,7 @@ function openTx(): Promise<PendingTx> {
 
 export const authContextPlugin = fp<AuthContextOptions>(async (app, opts) => {
   app.addHook("preHandler", async (request) => {
-    const url = request.url.split("?")[0];
+    const url = request.url.split("?")[0]!;
     if (opts.publicRoutes.includes(url)) return;
     if (opts.publicPrefixes?.some((p) => url.startsWith(p))) return;
 

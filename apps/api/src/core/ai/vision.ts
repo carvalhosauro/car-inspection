@@ -1,7 +1,10 @@
-import vision from "@google-cloud/vision";
+import vision, { ImageAnnotatorClient, protos } from "@google-cloud/vision";
 
-let client: vision.ImageAnnotatorClient | undefined;
-function visionClient(): vision.ImageAnnotatorClient {
+type IEntityAnnotation = protos.google.cloud.vision.v1.IEntityAnnotation;
+type ILocalizedObjectAnnotation = protos.google.cloud.vision.v1.ILocalizedObjectAnnotation;
+
+let client: ImageAnnotatorClient | undefined;
+function visionClient(): ImageAnnotatorClient {
   if (!client) client = new vision.ImageAnnotatorClient();
   return client;
 }
@@ -27,11 +30,11 @@ export async function annotatePhoto(image: Buffer): Promise<PhotoAnnotation> {
       ],
     });
     return {
-      labels: (res.labelAnnotations ?? []).map((l) => ({
+      labels: (res.labelAnnotations ?? []).map((l: IEntityAnnotation) => ({
         description: (l.description ?? "").toLowerCase(),
         score: l.score ?? 0,
       })),
-      objects: (res.localizedObjectAnnotations ?? []).map((o) => ({
+      objects: (res.localizedObjectAnnotations ?? []).map((o: ILocalizedObjectAnnotation) => ({
         name: (o.name ?? "").toLowerCase(),
         score: o.score ?? 0,
       })),
