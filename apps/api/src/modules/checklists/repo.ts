@@ -1,4 +1,4 @@
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, gt } from "drizzle-orm";
 import { schema, newId } from "@vistoria/db";
 import type { Tx } from "../../core/auth/types";
 import type { ProofKind } from "@vistoria/contracts";
@@ -52,11 +52,11 @@ export async function insertRequirement(
   return rows[0]!;
 }
 
-export async function getTemplate(tx: Tx, id: string) {
+export async function getTemplate(tx: Tx, tenantId: string, id: string) {
   const rows = await tx
     .select()
     .from(schema.checklistTemplates)
-    .where(eq(schema.checklistTemplates.id, id))
+    .where(and(eq(schema.checklistTemplates.id, id), eq(schema.checklistTemplates.tenantId, tenantId)))
     .limit(1);
   return rows[0];
 }
@@ -79,7 +79,7 @@ export async function listRequirements(tx: Tx, checklistItemId: string) {
 
 export async function listTemplates(tx: Tx, cursor: string | undefined, limit: number) {
   const where = cursor
-    ? and(eq(schema.checklistTemplates.active, true))
+    ? and(eq(schema.checklistTemplates.active, true), gt(schema.checklistTemplates.id, cursor))
     : eq(schema.checklistTemplates.active, true);
   return tx
     .select()
@@ -91,13 +91,14 @@ export async function listTemplates(tx: Tx, cursor: string | undefined, limit: n
 
 export async function updateItem(
   tx: Tx,
+  tenantId: string,
   id: string,
   data: Partial<{ label: string; description: string; order: number }>,
 ) {
   const rows = await tx
     .update(schema.checklistItems)
     .set(data)
-    .where(eq(schema.checklistItems.id, id))
+    .where(and(eq(schema.checklistItems.id, id), eq(schema.checklistItems.tenantId, tenantId)))
     .returning();
   return rows[0];
 }

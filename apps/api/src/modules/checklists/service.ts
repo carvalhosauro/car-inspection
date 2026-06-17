@@ -93,8 +93,8 @@ export async function createTemplate(
   return templateToDto(tx, template);
 }
 
-export async function getTemplateDto(tx: Tx, id: string): Promise<ChecklistTemplateDto> {
-  const row = await getTemplate(tx, id);
+export async function getTemplateDto(tx: Tx, tenantId: string, id: string): Promise<ChecklistTemplateDto> {
+  const row = await getTemplate(tx, tenantId, id);
   if (!row) throw errors.notFound("Template not found");
   return templateToDto(tx, row);
 }
@@ -121,7 +121,7 @@ export async function addItem(
     requirements: CreateChecklistTemplateInput["items"][number]["requirements"];
   },
 ): Promise<ChecklistItemDto> {
-  const template = await getTemplate(tx, templateId);
+  const template = await getTemplate(tx, tenantId, templateId);
   if (!template) throw errors.notFound("Template not found");
   const itemRow = await insertItem(tx, tenantId, templateId, {
     label: input.label,
@@ -141,10 +141,11 @@ export async function addItem(
 
 export async function patchItem(
   tx: Tx,
+  tenantId: string,
   id: string,
   data: Partial<{ label: string; description: string; order: number }>,
 ): Promise<ChecklistItemDto> {
-  const row = await updateItem(tx, id, data);
+  const row = await updateItem(tx, tenantId, id, data);
   if (!row) throw errors.notFound("Item not found");
   return itemToDto(tx, row);
 }

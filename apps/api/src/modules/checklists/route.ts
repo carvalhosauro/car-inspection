@@ -76,7 +76,10 @@ export async function checklistRoutes(app: FastifyInstance): Promise<void> {
   r.get(
     "/checklist-templates/:id",
     { preHandler: guard, schema: { params: idParams, response: { 200: checklistTemplateDto } } },
-    async (request) => service.getTemplateDto(request.tx, request.params.id),
+    async (request) => {
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      return service.getTemplateDto(request.tx, request.ctx.tenantId, request.params.id);
+    },
   );
 
   r.post(
@@ -103,7 +106,10 @@ export async function checklistRoutes(app: FastifyInstance): Promise<void> {
       preHandler: guard,
       schema: { params: idParams, body: patchItemBody, response: { 200: checklistItemDto } },
     },
-    async (request) => service.patchItem(request.tx, request.params.id, request.body),
+    async (request) => {
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      return service.patchItem(request.tx, request.ctx.tenantId, request.params.id, request.body);
+    },
   );
 
   r.post(
