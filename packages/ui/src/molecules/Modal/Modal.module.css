@@ -39,6 +39,7 @@
 .body {
   font-size: var(--font-body-size);
   color: var(--color-neutral-600);
+  padding: var(--space-lg);
 }
 
 .actions {

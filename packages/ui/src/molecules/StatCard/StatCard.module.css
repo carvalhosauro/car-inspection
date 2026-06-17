@@ -1,4 +1,4 @@
-.card { display: flex; flex-direction: column; gap: var(--space-xs); border: 1px solid var(--color-neutral-300); border-radius: 12px; padding: var(--space-md); background: var(--color-neutral-white); min-width: 160px; }
+.card { display: flex; flex-direction: column; gap: var(--space-xs); border: 1px solid var(--color-neutral-300); border-radius: 12px; padding: var(--space-lg); background: var(--color-neutral-white); min-width: 160px; }
 .value { font-size: var(--font-h1-size); font-weight: 700; color: var(--color-dark); }
 .label { font-size: var(--font-small-size); color: var(--color-neutral-600); }
 .change { font-size: var(--font-small-size); font-weight: 600; }

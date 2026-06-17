@@ -24,6 +24,8 @@ export const spacing = {
   md: 16,
   lg: 24,
   xl: 32,
+  "2xl": 48,
+  "3xl": 64,
 } as const;
 
 export type ColorToken = keyof typeof colors;

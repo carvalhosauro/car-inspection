@@ -1,5 +1,6 @@
 .track {
   width: 100%;
+  min-width: 200px;
   height: 8px;
   background: var(--color-neutral-300);
   border-radius: 9999px;

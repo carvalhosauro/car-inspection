@@ -4,7 +4,7 @@
   gap: var(--space-sm);
   border: 1px dashed var(--color-primary);
   border-radius: 8px;
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-md) var(--space-lg);
 }
 .code {
   font-family: monospace;
