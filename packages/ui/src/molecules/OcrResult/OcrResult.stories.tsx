@@ -6,12 +6,12 @@ const meta: Meta<typeof OcrResult> = { title: "Molecules/OcrResult", component: 
 export default meta;
 type Story = StoryObj<typeof OcrResult>;
 
-export const Placa: Story = { args: { type: "placa", value: "ABC1D23", validated: true } };
-export const Hodometro: Story = { args: { type: "hodometro", value: "45000 km" } };
+export const Placa: Story = { args: { type: "placa", result: "ABC1D23", validated: true } };
+export const Hodometro: Story = { args: { type: "hodometro", result: "45000 km" } };
 
 export const Smoke: Story = {
-  args: { type: "placa", value: "ABC1D23" },
+  args: { type: "placa", result: "ABC1D23" },
   play: async ({ canvasElement }) => {
-    await expect(within(canvasElement).getByText("Placa")).toBeInTheDocument();
+    await expect(within(canvasElement).getByText("Placa (OCR)")).toBeInTheDocument();
   },
 };

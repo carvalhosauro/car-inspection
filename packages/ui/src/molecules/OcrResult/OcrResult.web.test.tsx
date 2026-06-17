@@ -13,7 +13,7 @@ describe("OcrResult (web)", () => {
     expect(screen.getByText("Validado")).toBeInTheDocument();
   });
   it("omits the badge when not validated", () => {
-    render(<OcrResult type="hodometro" value="45000" />);
+    render(<OcrResult type="hodometro" result="45000" />);
     expect(screen.queryByText("Validado")).not.toBeInTheDocument();
   });
 });
