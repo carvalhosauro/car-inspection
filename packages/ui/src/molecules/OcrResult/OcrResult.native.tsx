@@ -13,12 +13,12 @@ const styles = StyleSheet.create({
   pillText: { fontSize: 12, fontWeight: "600", color: colors.success },
 });
 
-export const OcrResult: FC<OcrResultProps> = ({ type, value, imageUrl, validated }) => (
+export const OcrResult: FC<OcrResultProps> = ({ type, result, imageUrl, validated }) => (
   <View style={styles.row}>
     {imageUrl ? <Image style={styles.thumb} source={{ uri: imageUrl }} /> : <View style={styles.thumb} />}
     <View style={styles.body}>
       <Text style={styles.type}>{OCR_LABEL[type]}</Text>
-      <Text style={styles.value}>{value}</Text>
+      <Text style={styles.value}>{result}</Text>
     </View>
     {validated ? (
       <View style={styles.pill}>
