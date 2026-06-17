@@ -6,8 +6,8 @@ import {
   avgInspectionSeconds,
 } from "./repo";
 
-export async function summary(tx: Tx) {
-  const rows = await countByStatus(tx);
+export async function summary(tx: Tx, tenantId: string) {
+  const rows = await countByStatus(tx, tenantId);
   const byStatus: Record<string, number> = {};
   let total = 0;
   for (const row of rows) {
@@ -17,14 +17,14 @@ export async function summary(tx: Tx) {
   return { byStatus, total };
 }
 
-export async function damages(tx: Tx) {
-  return { items: await damagesByVehicle(tx) };
+export async function damages(tx: Tx, tenantId: string) {
+  return { items: await damagesByVehicle(tx, tenantId) };
 }
 
-export async function pending(tx: Tx) {
-  return { items: await pendingByInspector(tx) };
+export async function pending(tx: Tx, tenantId: string) {
+  return { items: await pendingByInspector(tx, tenantId) };
 }
 
-export async function avgTime(tx: Tx) {
-  return { avgSeconds: await avgInspectionSeconds(tx) };
+export async function avgTime(tx: Tx, tenantId: string) {
+  return { avgSeconds: await avgInspectionSeconds(tx, tenantId) };
 }

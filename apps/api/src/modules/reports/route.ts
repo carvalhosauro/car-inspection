@@ -18,7 +18,7 @@ export async function reportRoutes(app: FastifyInstance): Promise<void> {
         },
       },
     },
-    async (request) => service.summary(request.tx),
+    async (request) => service.summary(request.tx, request.ctx.tenantId),
   );
 
   r.get(
@@ -33,7 +33,7 @@ export async function reportRoutes(app: FastifyInstance): Promise<void> {
         },
       },
     },
-    async (request) => service.damages(request.tx),
+    async (request) => service.damages(request.tx, request.ctx.tenantId),
   );
 
   r.get(
@@ -48,7 +48,7 @@ export async function reportRoutes(app: FastifyInstance): Promise<void> {
         },
       },
     },
-    async (request) => service.pending(request.tx),
+    async (request) => service.pending(request.tx, request.ctx.tenantId),
   );
 
   r.get(
@@ -57,6 +57,6 @@ export async function reportRoutes(app: FastifyInstance): Promise<void> {
       preHandler: guard,
       schema: { response: { 200: z.object({ avgSeconds: z.number().nullable() }) } },
     },
-    async (request) => service.avgTime(request.tx),
+    async (request) => service.avgTime(request.tx, request.ctx.tenantId),
   );
 }
