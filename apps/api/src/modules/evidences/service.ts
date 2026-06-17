@@ -97,6 +97,11 @@ export async function createEvidence(
     accepted: result.accepted,
     idempotencyKey: input.idempotencyKey,
   });
+
+  if (result.accepted === true) {
+    await updateInspectionItem(tx, inspectionItemId, { status: "conforme" });
+  }
+
   return evToDto(row);
 }
 

@@ -25,6 +25,7 @@ let app: FastifyInstance;
 let gestor: { id: string; tenantId: string | null; role: "gestor" };
 let vistoriador: { id: string; tenantId: string | null; role: "vistoriador" };
 let itemId: string;
+let inspectionId: string;
 
 beforeAll(async () => {
   app = await buildTestApp();
@@ -59,9 +60,10 @@ beforeAll(async () => {
     headers: authHeader(gestor),
     payload: { vehicleId: v.json().id, templateId: t.json().id, inspectorId: vistoriador.id, type: "retirada" },
   });
+  inspectionId = insp.json().id;
   const items = await app.inject({
     method: "GET",
-    url: `/v1/inspections/${insp.json().id}/items`,
+    url: `/v1/inspections/${inspectionId}/items`,
     headers: authHeader(vistoriador),
   });
   itemId = items.json()[0].id;
@@ -126,10 +128,22 @@ describe("evidences", () => {
       method: "POST",
       url: `/v1/inspection-items/${itemId}/evidences`,
       headers: authHeader(vistoriador),
-      payload: { kind: "photo", filePath: "p.jpg", idempotencyKey: `x-${Date.now()}` },
+      payload: { kind: "not_a_kind", filePath: "p.jpg", idempotencyKey: `x-${Date.now()}` },
     });
-    // 'photo' is valid; assert the valid path returns 201 (guards the schema branch)
-    expect(res.statusCode).toBe(201);
+    expect(res.statusCode).toBe(400);
+  });
+
+  it("sets item status to conforme after accepted evidence", async () => {
+    // Tests #1 (photo) and #3 (geo) already posted accepted evidence.
+    // Verify the item status was updated to "conforme" by the service.
+    const itemsRes = await app.inject({
+      method: "GET",
+      url: `/v1/inspections/${inspectionId}/items`,
+      headers: authHeader(vistoriador),
+    });
+    expect(itemsRes.statusCode).toBe(200);
+    const item = itemsRes.json().find((i: { id: string }) => i.id === itemId);
+    expect(item?.status).toBe("conforme");
   });
 
   it("patches an item status to nao_conforme with justification", async () => {
