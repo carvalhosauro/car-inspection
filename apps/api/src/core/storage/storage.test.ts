@@ -11,7 +11,7 @@ vi.mock("@supabase/supabase-js", () => ({
   }),
 }));
 
-import { signUploadUrl, downloadBytes } from "./index";
+import { signUploadUrl, downloadBytes } from "./index.js";
 
 describe("storage", () => {
   it("signUploadUrl returns the path, signedUrl and token", async () => {

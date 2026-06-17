@@ -1,6 +1,6 @@
 import { and, asc, eq } from "drizzle-orm";
 import { schema, newId } from "@vistoria/db";
-import type { Tx } from "../../core/auth/types";
+import type { Tx } from "../../core/auth/types.js";
 
 export async function getInspectionItem(tx: Tx, id: string) {
   const rows = await tx

@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { loginInput, tokenPair, refreshInput, meOutput } from "@vistoria/contracts";
 import { z } from "zod";
-import * as service from "./service";
+import * as service from "./service.js";
 
 export async function authRoutes(app: FastifyInstance): Promise<void> {
   const r = app.withTypeProvider<ZodTypeProvider>();

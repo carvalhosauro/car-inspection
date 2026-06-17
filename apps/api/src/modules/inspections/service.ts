@@ -10,8 +10,8 @@ import type {
   PaginationQuery,
   ProofKind,
 } from "@vistoria/contracts";
-import type { Tx } from "../../core/auth/types";
-import { errors } from "../../core/errors/app-error";
+import type { Tx } from "../../core/auth/types.js";
+import { errors } from "../../core/errors/app-error.js";
 import {
   getVehicle,
   getTemplate,
@@ -26,7 +26,7 @@ import {
   listInspections,
   listInspectorToday,
   type InspectionFilter,
-} from "./repo";
+} from "./repo.js";
 
 type InspectionRow = {
   id: string;

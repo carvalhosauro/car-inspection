@@ -1,6 +1,6 @@
 import { asc, eq, gt, and } from "drizzle-orm";
 import { schema, newId } from "@vistoria/db";
-import type { Tx } from "../../core/auth/types";
+import type { Tx } from "../../core/auth/types.js";
 import type { CreateVehicleInput, UpdateVehicleInput } from "@vistoria/contracts";
 
 export async function insertVehicle(tx: Tx, tenantId: string, input: CreateVehicleInput) {

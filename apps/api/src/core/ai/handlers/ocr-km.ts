@@ -1,5 +1,5 @@
-import type { ProofHandler } from "../registry";
-import { annotateText } from "../vision";
+import type { ProofHandler } from "../registry.js";
+import { annotateText } from "../vision.js";
 
 export const ocrKmHandler: ProofHandler = async ({ bytes, ctx }) => {
   if (!bytes) return { accepted: null, validation: { reason: "pendente: sem bytes" } };

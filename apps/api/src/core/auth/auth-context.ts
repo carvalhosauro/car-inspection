@@ -1,9 +1,9 @@
 import fp from "fastify-plugin";
 import { sql } from "drizzle-orm";
 import { db } from "@vistoria/db";
-import { verifyAccess } from "./tokens";
-import { errors } from "../errors/app-error";
-import type { Tx } from "./types";
+import { verifyAccess } from "./tokens.js";
+import { errors } from "../errors/app-error.js";
+import type { Tx } from "./types.js";
 import "./types";
 
 interface AuthContextOptions {

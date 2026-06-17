@@ -1,6 +1,6 @@
 import { and, asc, desc, eq, gt, lt } from "drizzle-orm";
 import { schema, newId } from "@vistoria/db";
-import type { Tx } from "../../core/auth/types";
+import type { Tx } from "../../core/auth/types.js";
 
 export async function getVehicle(tx: Tx, id: string) {
   const rows = await tx.select().from(schema.vehicles).where(eq(schema.vehicles.id, id)).limit(1);

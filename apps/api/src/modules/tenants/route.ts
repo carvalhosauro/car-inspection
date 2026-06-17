@@ -7,8 +7,8 @@ import {
   paginationQuerySchema,
   pageSchema,
 } from "@vistoria/contracts";
-import { requireRole } from "../../core/auth/require-role";
-import * as service from "./service";
+import { requireRole } from "../../core/auth/require-role.js";
+import * as service from "./service.js";
 
 export async function tenantRoutes(app: FastifyInstance): Promise<void> {
   const r = app.withTypeProvider<ZodTypeProvider>();

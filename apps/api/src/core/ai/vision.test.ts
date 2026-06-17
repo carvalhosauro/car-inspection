@@ -7,7 +7,7 @@ vi.mock("@google-cloud/vision", () => ({
   ImageAnnotatorClient: vi.fn(() => ({ annotateImage })),
 }));
 
-import { annotatePhoto, annotateText } from "./vision";
+import { annotatePhoto, annotateText } from "./vision.js";
 
 describe("vision", () => {
   it("annotatePhoto returns labels, objects and safeSearch", async () => {

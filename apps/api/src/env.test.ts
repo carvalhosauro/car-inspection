@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { loadEnv } from "./env";
+import { loadEnv } from "./env.js";
 
 describe("loadEnv", () => {
   it("parses a complete environment", () => {

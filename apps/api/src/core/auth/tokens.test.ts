@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { signAccess, signRefresh, verifyAccess, verifyRefresh } from "./tokens";
+import { signAccess, signRefresh, verifyAccess, verifyRefresh } from "./tokens.js";
 
 const SECRETS = { access: "access-secret", refresh: "refresh-secret" };
 const payload = {

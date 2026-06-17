@@ -1,5 +1,5 @@
 import { newId } from "@vistoria/db";
-import { signUploadUrl } from "../../core/storage/index";
+import { signUploadUrl } from "../../core/storage/index.js";
 
 const EXT: Record<string, string> = {
   "image/jpeg": "jpg",

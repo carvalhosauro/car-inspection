@@ -11,7 +11,7 @@ vi.mock("../phash", async () => {
   return { perceptualHash, hammingDistance: actual.hammingDistance };
 });
 
-import { photoHandler } from "./photo";
+import { photoHandler } from "./photo.js";
 
 const ctx = {
   tenantId: "t",

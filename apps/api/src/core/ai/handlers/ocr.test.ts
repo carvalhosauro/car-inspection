@@ -3,8 +3,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 const { annotateText } = vi.hoisted(() => ({ annotateText: vi.fn() }));
 vi.mock("../vision", () => ({ annotateText }));
 
-import { ocrPlateHandler } from "./ocr-plate";
-import { ocrKmHandler } from "./ocr-km";
+import { ocrPlateHandler } from "./ocr-plate.js";
+import { ocrKmHandler } from "./ocr-km.js";
 
 const ctx = {
   tenantId: "t",

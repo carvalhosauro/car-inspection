@@ -9,7 +9,7 @@ vi.mock("../core/storage/index", () => ({
   downloadBytes: vi.fn(),
 }));
 
-import { buildTestApp, seedTenant, authHeader } from "./helpers";
+import { buildTestApp, seedTenant, authHeader } from "./helpers.js";
 import type { FastifyInstance } from "fastify";
 
 let app: FastifyInstance;

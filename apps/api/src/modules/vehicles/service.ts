@@ -4,14 +4,14 @@ import type {
   VehicleDto,
   PaginationQuery,
 } from "@vistoria/contracts";
-import type { Tx } from "../../core/auth/types";
-import { errors } from "../../core/errors/app-error";
+import type { Tx } from "../../core/auth/types.js";
+import { errors } from "../../core/errors/app-error.js";
 import {
   insertVehicle,
   getVehicle,
   listVehicles,
   updateVehicle,
-} from "./repo";
+} from "./repo.js";
 
 type Row = {
   id: string;

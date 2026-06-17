@@ -1,6 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { UserRole } from "@vistoria/contracts";
-import { errors } from "../errors/app-error";
+import { errors } from "../errors/app-error.js";
 import "./types";
 
 export function requireRole(roles: readonly UserRole[]) {

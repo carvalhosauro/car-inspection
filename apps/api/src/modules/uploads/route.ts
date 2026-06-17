@@ -1,9 +1,9 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
-import { requireRole } from "../../core/auth/require-role";
-import { errors } from "../../core/errors/app-error";
-import * as service from "./service";
+import { requireRole } from "../../core/auth/require-role.js";
+import { errors } from "../../core/errors/app-error.js";
+import * as service from "./service.js";
 
 export async function uploadRoutes(app: FastifyInstance): Promise<void> {
   const r = app.withTypeProvider<ZodTypeProvider>();

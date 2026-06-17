@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { requireRole } from "./require-role";
-import { AppError } from "../errors/app-error";
+import { requireRole } from "./require-role.js";
+import { AppError } from "../errors/app-error.js";
 
 function fakeReq(role: string) {
   return { ctx: { userId: "u", tenantId: "t", role } } as never;

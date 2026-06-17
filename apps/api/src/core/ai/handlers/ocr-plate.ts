@@ -1,6 +1,6 @@
-import type { ProofHandler } from "../registry";
-import { annotateText } from "../vision";
-import { extractPlate } from "../plate";
+import type { ProofHandler } from "../registry.js";
+import { annotateText } from "../vision.js";
+import { extractPlate } from "../plate.js";
 
 export const ocrPlateHandler: ProofHandler = async ({ bytes }) => {
   if (!bytes) return { accepted: null, validation: { reason: "pendente: sem bytes" } };

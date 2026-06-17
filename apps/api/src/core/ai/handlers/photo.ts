@@ -1,6 +1,6 @@
-import type { ProofHandler } from "../registry";
-import { annotatePhoto } from "../vision";
-import { perceptualHash, hammingDistance } from "../phash";
+import type { ProofHandler } from "../registry.js";
+import { annotatePhoto } from "../vision.js";
+import { perceptualHash, hammingDistance } from "../phash.js";
 
 const SAFE_OK = new Set(["VERY_UNLIKELY", "UNLIKELY", "POSSIBLE", "UNKNOWN"]);
 const DEFAULT_MIN_HAMMING = 8;

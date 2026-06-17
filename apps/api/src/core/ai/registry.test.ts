@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { aiRegistry } from "./registry";
+import { aiRegistry } from "./registry.js";
 
 const baseCtx = {
   tenantId: "00000000-0000-7000-8000-0000000000aa",

@@ -1,9 +1,9 @@
 import type { LoginInput, TokenPair, JwtPayload, MeOutput } from "@vistoria/contracts";
-import { verifyPassword } from "../../core/auth/password";
-import { signAccess, signRefresh, verifyRefresh } from "../../core/auth/tokens";
-import { errors } from "../../core/errors/app-error";
-import { env } from "../../env";
-import { findUserByEmail, findUserById } from "./repo";
+import { verifyPassword } from "../../core/auth/password.js";
+import { signAccess, signRefresh, verifyRefresh } from "../../core/auth/tokens.js";
+import { errors } from "../../core/errors/app-error.js";
+import { env } from "../../env.js";
+import { findUserByEmail, findUserById } from "./repo.js";
 
 export async function login(input: LoginInput): Promise<TokenPair> {
   const user = await findUserByEmail(input.email);

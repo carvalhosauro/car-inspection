@@ -10,9 +10,9 @@ import {
   paginationQuerySchema,
   pageSchema,
 } from "@vistoria/contracts";
-import { requireRole } from "../../core/auth/require-role";
-import { errors } from "../../core/errors/app-error";
-import * as service from "./service";
+import { requireRole } from "../../core/auth/require-role.js";
+import { errors } from "../../core/errors/app-error.js";
+import * as service from "./service.js";
 
 const createItemBody = z.object({
   label: z.string().min(1),

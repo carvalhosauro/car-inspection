@@ -1,9 +1,9 @@
 import type { ProofKind } from "@vistoria/contracts";
-import { geoHandler } from "./handlers/geo";
-import { uniqueCodeHandler } from "./handlers/unique-code";
-import { photoHandler } from "./handlers/photo";
-import { ocrPlateHandler } from "./handlers/ocr-plate";
-import { ocrKmHandler } from "./handlers/ocr-km";
+import { geoHandler } from "./handlers/geo.js";
+import { uniqueCodeHandler } from "./handlers/unique-code.js";
+import { photoHandler } from "./handlers/photo.js";
+import { ocrPlateHandler } from "./handlers/ocr-plate.js";
+import { ocrKmHandler } from "./handlers/ocr-km.js";
 
 /** Context every handler may read about the inspection being evidenced. */
 export interface HandlerCtx {

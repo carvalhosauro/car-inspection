@@ -1,4 +1,4 @@
-import type { ProofHandler } from "../registry";
+import type { ProofHandler } from "../registry.js";
 
 // The unique code is server-generated at finish; this handler just records it.
 export const uniqueCodeHandler: ProofHandler = async ({ value }) => {

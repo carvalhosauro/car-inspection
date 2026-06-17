@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { schema } from "@vistoria/db";
-import type { Tx } from "../../core/auth/types";
+import type { Tx } from "../../core/auth/types.js";
 
 export async function countByStatus(tx: Tx, tenantId: string) {
   const r = await tx.execute(sql`

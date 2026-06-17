@@ -1,10 +1,10 @@
 import { eq } from "drizzle-orm";
 import { schema } from "@vistoria/db";
 import type { CreateTenantInput, TenantDto, PaginationQuery } from "@vistoria/contracts";
-import type { Tx } from "../../core/auth/types";
-import { hashPassword } from "../../core/auth/password";
-import { errors } from "../../core/errors/app-error";
-import { insertTenantWithGestor, listTenants } from "./repo";
+import type { Tx } from "../../core/auth/types.js";
+import { hashPassword } from "../../core/auth/password.js";
+import { errors } from "../../core/errors/app-error.js";
+import { insertTenantWithGestor, listTenants } from "./repo.js";
 
 function toDto(row: {
   id: string;

@@ -1,10 +1,10 @@
-import type { Tx } from "../../core/auth/types";
+import type { Tx } from "../../core/auth/types.js";
 import {
   countByStatus,
   damagesByVehicle,
   pendingByInspector,
   avgInspectionSeconds,
-} from "./repo";
+} from "./repo.js";
 
 export async function summary(tx: Tx, tenantId: string) {
   const rows = await countByStatus(tx, tenantId);

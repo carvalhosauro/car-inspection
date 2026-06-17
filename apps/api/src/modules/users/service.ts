@@ -4,10 +4,10 @@ import type {
   UserDto,
   PaginationQuery,
 } from "@vistoria/contracts";
-import type { Tx } from "../../core/auth/types";
-import { hashPassword } from "../../core/auth/password";
-import { errors } from "../../core/errors/app-error";
-import { insertUser, listUsers, updateUser } from "./repo";
+import type { Tx } from "../../core/auth/types.js";
+import { hashPassword } from "../../core/auth/password.js";
+import { errors } from "../../core/errors/app-error.js";
+import { insertUser, listUsers, updateUser } from "./repo.js";
 
 type Row = {
   id: string;

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { extractPlate } from "./plate";
+import { extractPlate } from "./plate.js";
 
 describe("extractPlate", () => {
   it("matches a Mercosul plate AAA1A23", () => {

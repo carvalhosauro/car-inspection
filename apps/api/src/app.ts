@@ -6,20 +6,21 @@ import swaggerUi from "@fastify/swagger-ui";
 import {
   serializerCompiler,
   validatorCompiler,
+  jsonSchemaTransform,
   type ZodTypeProvider,
 } from "fastify-type-provider-zod";
-import { env } from "./env";
-import { errorHandler } from "./core/errors/error-handler";
-import { authContextPlugin } from "./core/auth/auth-context";
-import { authRoutes } from "./modules/auth/route";
-import { tenantRoutes } from "./modules/tenants/route";
-import { userRoutes } from "./modules/users/route";
-import { vehicleRoutes } from "./modules/vehicles/route";
-import { checklistRoutes } from "./modules/checklists/route";
-import { inspectionRoutes } from "./modules/inspections/route";
-import { evidenceRoutes } from "./modules/evidences/route";
-import { uploadRoutes } from "./modules/uploads/route";
-import { reportRoutes } from "./modules/reports/route";
+import { env } from "./env.js";
+import { errorHandler } from "./core/errors/error-handler.js";
+import { authContextPlugin } from "./core/auth/auth-context.js";
+import { authRoutes } from "./modules/auth/route.js";
+import { tenantRoutes } from "./modules/tenants/route.js";
+import { userRoutes } from "./modules/users/route.js";
+import { vehicleRoutes } from "./modules/vehicles/route.js";
+import { checklistRoutes } from "./modules/checklists/route.js";
+import { inspectionRoutes } from "./modules/inspections/route.js";
+import { evidenceRoutes } from "./modules/evidences/route.js";
+import { uploadRoutes } from "./modules/uploads/route.js";
+import { reportRoutes } from "./modules/reports/route.js";
 
 const PUBLIC_ROUTES = ["/health", "/v1/auth/login", "/v1/auth/refresh"];
 
@@ -35,7 +36,7 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   await app.register(swagger, {
     openapi: { info: { title: "Vistoria API", version: "1.0.0" } },
-    transform: undefined,
+    transform: jsonSchemaTransform,
   });
   await app.register(swaggerUi, { routePrefix: "/docs" });
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import sharp from "sharp";
-import { perceptualHash, hammingDistance } from "./phash";
+import { perceptualHash, hammingDistance } from "./phash.js";
 
 async function solid(color: { r: number; g: number; b: number }) {
   return sharp({

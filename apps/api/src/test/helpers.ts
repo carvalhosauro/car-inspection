@@ -1,9 +1,9 @@
-import { buildApp } from "../app";
-import { hashPassword } from "../core/auth/password";
-import { signAccess } from "../core/auth/tokens";
+import { buildApp } from "../app.js";
+import { hashPassword } from "../core/auth/password.js";
+import { signAccess } from "../core/auth/tokens.js";
 import { db, schema } from "@vistoria/db";
 import { newId } from "@vistoria/db";
-import { env } from "../env";
+import { env } from "../env.js";
 import type { UserRole } from "@vistoria/contracts";
 
 export async function buildTestApp() {

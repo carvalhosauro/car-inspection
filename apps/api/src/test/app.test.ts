@@ -1,5 +1,5 @@
 import { describe, it, expect, afterAll } from "vitest";
-import { buildTestApp } from "./helpers";
+import { buildTestApp } from "./helpers.js";
 
 const appPromise = buildTestApp();
 

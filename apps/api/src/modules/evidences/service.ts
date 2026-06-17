@@ -4,10 +4,10 @@ import type {
   EvidenceDto,
   InspectionItemDto,
 } from "@vistoria/contracts";
-import type { Tx } from "../../core/auth/types";
-import { errors } from "../../core/errors/app-error";
-import { downloadBytes } from "../../core/storage/index";
-import { aiRegistry, type HandlerCtx } from "../../core/ai/registry";
+import type { Tx } from "../../core/auth/types.js";
+import { errors } from "../../core/errors/app-error.js";
+import { downloadBytes } from "../../core/storage/index.js";
+import { aiRegistry, type HandlerCtx } from "../../core/ai/registry.js";
 import {
   getInspectionItem,
   getInspection,
@@ -18,7 +18,7 @@ import {
   updateInspectionItem,
   insertChildItem,
   listItemEvidences,
-} from "./repo";
+} from "./repo.js";
 
 function evToDto(row: {
   id: string;

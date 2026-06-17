@@ -1,6 +1,6 @@
 import type { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 import { hasZodFastifySchemaValidationErrors } from "fastify-type-provider-zod";
-import { AppError } from "./app-error";
+import { AppError } from "./app-error.js";
 
 interface ErrorBody {
   code: string;

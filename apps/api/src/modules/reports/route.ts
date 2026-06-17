@@ -1,8 +1,9 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
-import { requireRole } from "../../core/auth/require-role";
-import * as service from "./service";
+import { requireRole } from "../../core/auth/require-role.js";
+import { errors } from "../../core/errors/app-error.js";
+import * as service from "./service.js";
 
 export async function reportRoutes(app: FastifyInstance): Promise<void> {
   const r = app.withTypeProvider<ZodTypeProvider>();
@@ -18,7 +19,10 @@ export async function reportRoutes(app: FastifyInstance): Promise<void> {
         },
       },
     },
-    async (request) => service.summary(request.tx, request.ctx.tenantId),
+    async (request) => {
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      return service.summary(request.tx, request.ctx.tenantId);
+    },
   );
 
   r.get(
@@ -33,7 +37,10 @@ export async function reportRoutes(app: FastifyInstance): Promise<void> {
         },
       },
     },
-    async (request) => service.damages(request.tx, request.ctx.tenantId),
+    async (request) => {
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      return service.damages(request.tx, request.ctx.tenantId);
+    },
   );
 
   r.get(
@@ -48,7 +55,10 @@ export async function reportRoutes(app: FastifyInstance): Promise<void> {
         },
       },
     },
-    async (request) => service.pending(request.tx, request.ctx.tenantId),
+    async (request) => {
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      return service.pending(request.tx, request.ctx.tenantId);
+    },
   );
 
   r.get(
@@ -57,6 +67,9 @@ export async function reportRoutes(app: FastifyInstance): Promise<void> {
       preHandler: guard,
       schema: { response: { 200: z.object({ avgSeconds: z.number().nullable() }) } },
     },
-    async (request) => service.avgTime(request.tx, request.ctx.tenantId),
+    async (request) => {
+      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      return service.avgTime(request.tx, request.ctx.tenantId);
+    },
   );
 }

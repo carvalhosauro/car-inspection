@@ -1,6 +1,6 @@
 import { and, asc, eq, gt } from "drizzle-orm";
 import { schema, newId } from "@vistoria/db";
-import type { Tx } from "../../core/auth/types";
+import type { Tx } from "../../core/auth/types.js";
 import type { ProofKind } from "@vistoria/contracts";
 
 export async function insertTemplate(tx: Tx, tenantId: string, name: string) {

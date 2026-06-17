@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
 import Fastify from "fastify";
 import { sql } from "drizzle-orm";
-import { signAccess } from "./tokens";
-import { authContextPlugin } from "./auth-context";
-import { errorHandler } from "../errors/error-handler";
+import { signAccess } from "./tokens.js";
+import { authContextPlugin } from "./auth-context.js";
+import { errorHandler } from "../errors/error-handler.js";
 
 const SECRET = "test-access-secret";
 

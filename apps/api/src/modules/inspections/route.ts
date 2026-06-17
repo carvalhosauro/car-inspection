@@ -9,9 +9,9 @@ import {
   paginationQuerySchema,
   pageSchema,
 } from "@vistoria/contracts";
-import { requireRole } from "../../core/auth/require-role";
-import { errors } from "../../core/errors/app-error";
-import * as service from "./service";
+import { requireRole } from "../../core/auth/require-role.js";
+import { errors } from "../../core/errors/app-error.js";
+import * as service from "./service.js";
 
 const idParams = z.object({ id: z.string().uuid() });
 const listQuery = paginationQuerySchema.extend({

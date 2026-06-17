@@ -1,4 +1,4 @@
-import type { ProofHandler } from "../registry";
+import type { ProofHandler } from "../registry.js";
 
 export const geoHandler: ProofHandler = async ({ value }) => {
   const lat = (value as { lat?: unknown } | undefined)?.lat;

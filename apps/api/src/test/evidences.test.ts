@@ -18,7 +18,7 @@ vi.mock("../core/ai/phash", async () => {
   return { perceptualHash: vi.fn(async () => "aaaa1234bbbb5678"), hammingDistance: actual.hammingDistance };
 });
 
-import { buildTestApp, seedTenant, authHeader } from "./helpers";
+import { buildTestApp, seedTenant, authHeader } from "./helpers.js";
 import type { FastifyInstance } from "fastify";
 
 let app: FastifyInstance;
