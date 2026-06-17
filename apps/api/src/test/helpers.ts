@@ -24,7 +24,7 @@ export async function seedTenant(roles: UserRole[]) {
   await db.insert(schema.tenants).values({
     id: tenantId,
     name: `T-${tenantId.slice(0, 8)}`,
-    slug: `t-${tenantId.slice(0, 8)}`,
+    slug: `t-${tenantId.replace(/-/g, "")}`,
     active: true,
   });
   const hash = await hashPassword("senha123");
@@ -36,7 +36,7 @@ export async function seedTenant(roles: UserRole[]) {
       id,
       tenantId: isSuper ? null : tenantId,
       name: `${role}-${id.slice(0, 6)}`,
-      email: `${role}-${id.slice(0, 6)}@test.dev`,
+      email: `${role}-${id.replace(/-/g, "")}@test.dev`,
       passwordHash: hash,
       role,
     });

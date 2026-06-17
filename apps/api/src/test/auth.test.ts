@@ -10,7 +10,7 @@ beforeAll(async () => {
   app = await buildTestApp();
   const seeded = await seedTenant(["gestor"]);
   gestor = seeded.users.gestor as typeof gestor;
-  gestorEmail = `gestor-${gestor.id.slice(0, 6)}@test.dev`;
+  gestorEmail = `gestor-${gestor.id.replace(/-/g, "")}@test.dev`;
 });
 
 afterAll(async () => {

@@ -82,6 +82,7 @@ export const authContextPlugin = fp<AuthContextOptions>(async (app, opts) => {
   app.addHook("onError", async (request, _reply, error) => {
     const pending = (request as unknown as { _pendingTx?: PendingTx })._pendingTx;
     if (pending) {
+      (request as unknown as { _pendingTx?: PendingTx })._pendingTx = undefined;
       pending.rollback(error);
       await pending.done.catch(() => undefined);
     }
