@@ -24,8 +24,20 @@ function toDto(row: {
 
 export async function createTenant(tx: Tx, input: CreateTenantInput): Promise<TenantDto> {
   const hash = await hashPassword(input.gestor.password);
-  const row = await insertTenantWithGestor(tx, input, hash);
-  return toDto(row);
+  try {
+    const row = await insertTenantWithGestor(tx, input, hash);
+    return toDto(row);
+  } catch (err: unknown) {
+    if (
+      typeof err === "object" &&
+      err !== null &&
+      "code" in err &&
+      (err as { code: string }).code === "23505"
+    ) {
+      throw errors.conflict("Tenant slug or gestor email already exists");
+    }
+    throw err;
+  }
 }
 
 export async function list(
