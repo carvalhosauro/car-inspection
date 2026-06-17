@@ -35,7 +35,7 @@ export async function userRoutes(app: FastifyInstance): Promise<void> {
       preHandler: requireRole(["gestor"]),
       schema: { querystring: paginationQuerySchema, response: { 200: pageSchema(userDto) } },
     },
-    async (request) => service.list(request.tx, request.query),
+    async (request) => service.list(request.tx, request.ctx.tenantId!, request.query),
   );
 
   r.patch(
@@ -44,14 +44,14 @@ export async function userRoutes(app: FastifyInstance): Promise<void> {
       preHandler: requireRole(["gestor"]),
       schema: { params: idParams, body: updateUserInput, response: { 200: userDto } },
     },
-    async (request) => service.update(request.tx, request.params.id, request.body),
+    async (request) => service.update(request.tx, request.ctx.tenantId!, request.params.id, request.body),
   );
 
   r.delete(
     "/:id",
     { preHandler: requireRole(["gestor"]), schema: { params: idParams } },
     async (request, reply) => {
-      await service.softDelete(request.tx, request.params.id);
+      await service.softDelete(request.tx, request.ctx.tenantId!, request.params.id);
       reply.status(204).send();
     },
   );

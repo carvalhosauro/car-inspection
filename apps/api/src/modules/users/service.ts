@@ -52,9 +52,10 @@ export async function create(
 
 export async function list(
   tx: Tx,
+  tenantId: string,
   query: PaginationQuery,
 ): Promise<{ items: UserDto[]; nextCursor: string | null }> {
-  const rows = await listUsers(tx, query.cursor, query.limit);
+  const rows = await listUsers(tx, tenantId, query.cursor, query.limit);
   const hasMore = rows.length > query.limit;
   const page = hasMore ? rows.slice(0, query.limit) : rows;
   return {
@@ -65,15 +66,16 @@ export async function list(
 
 export async function update(
   tx: Tx,
+  tenantId: string,
   id: string,
   input: UpdateUserInput,
 ): Promise<UserDto> {
-  const row = await updateUser(tx, id, input);
+  const row = await updateUser(tx, tenantId, id, input);
   if (!row) throw errors.notFound("User not found");
   return toDto(row as Row);
 }
 
-export async function softDelete(tx: Tx, id: string): Promise<void> {
-  const row = await updateUser(tx, id, { active: false });
+export async function softDelete(tx: Tx, tenantId: string, id: string): Promise<void> {
+  const row = await updateUser(tx, tenantId, id, { active: false });
   if (!row) throw errors.notFound("User not found");
 }
