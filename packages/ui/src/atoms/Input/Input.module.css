@@ -17,6 +17,7 @@
   outline: 2px solid var(--color-primary);
   outline-offset: -1px;
 }
+.field::placeholder { color: var(--color-neutral-300); }
 .field:disabled {
   background: var(--color-neutral-50);
   color: var(--color-neutral-300);

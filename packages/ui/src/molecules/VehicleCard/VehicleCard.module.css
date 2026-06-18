@@ -6,7 +6,8 @@
   border-radius: 12px;
   padding: var(--space-lg);
   background: var(--color-neutral-white);
-  width: 280px;
+  width: 100%;
+  min-width: 240px;
 }
 .pressable {
   cursor: pointer;

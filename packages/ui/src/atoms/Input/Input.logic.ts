@@ -14,6 +14,7 @@ export interface InputProps {
   errorMessage?: string;
   options?: InputOption[];
   onChangeText?: (value: string) => void;
+  disabled?: boolean;
 }
 
 export function resolveInputState(props: InputProps): InputState {
