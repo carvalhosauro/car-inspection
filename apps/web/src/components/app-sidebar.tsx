@@ -44,7 +44,8 @@ export function AppSidebar({ role }: { role: UserRole }) {
 
   function handleNavigate(id: string) {
     const href = hrefMap[id];
-    if (href) router.push(href);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (href) router.push(href as any);
   }
 
   async function logout() {
