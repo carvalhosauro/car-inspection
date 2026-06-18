@@ -12,6 +12,6 @@ export interface StatCardProps {
 export function resolveChange(p: StatCardProps): { arrow: string; color: string } | null {
   if (!p.change || !p.changeDirection) return null;
   return p.changeDirection === "up"
-    ? { arrow: "↑", color: colors.success }
+    ? { arrow: "↑", color: "#166534" }
     : { arrow: "↓", color: colors.error };
 }
