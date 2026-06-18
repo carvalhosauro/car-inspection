@@ -1,5 +1,5 @@
 import {
-  pgTable, pgEnum, uuid, text, integer, boolean, timestamp, numeric, jsonb,
+  pgTable, pgEnum, uuid, text, integer, boolean, timestamp, numeric, jsonb, unique,
 } from "drizzle-orm/pg-core";
 import {
   USER_ROLES, VEHICLE_STATUSES, INSPECTION_TYPES, INSPECTION_STATUSES,
@@ -123,4 +123,6 @@ export const inspectionEvidences = pgTable("inspection_evidences", {
   accepted: boolean("accepted"),
   idempotencyKey: text("idempotency_key"),
   createdAt: createdAt(),
-});
+}, (t) => [
+  unique("inspection_evidences_item_idempotency_key").on(t.inspectionItemId, t.idempotencyKey),
+]);

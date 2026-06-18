@@ -1,0 +1,32 @@
+.area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  border: 2px dashed var(--color-neutral-300);
+  border-radius: 12px;
+  padding: var(--space-xl);
+  background: var(--color-neutral-50);
+  color: var(--color-neutral-600);
+  cursor: pointer;
+  text-align: center;
+}
+
+.area[data-state="dragging"] {
+  border-color: var(--color-primary);
+  background: #DBEAFE;
+}
+
+.area[data-state="success"] {
+  border-color: var(--color-success);
+}
+
+.area[data-state="error"] {
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+.hidden {
+  display: none;
+}

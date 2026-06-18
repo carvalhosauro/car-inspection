@@ -1,0 +1,7 @@
+.tag { display: inline-flex; align-items: center; gap: var(--space-sm); }
+.pin { font-size: var(--font-body-size); }
+.location { font-size: var(--font-body-size); color: var(--color-dark); }
+.statusLabel { font-size: var(--font-small-size); font-weight: 600; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 1s linear infinite; }

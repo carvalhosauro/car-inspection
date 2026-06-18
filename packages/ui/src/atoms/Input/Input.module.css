@@ -1,0 +1,66 @@
+.wrapper { display: flex; flex-direction: column; gap: var(--space-xs); }
+.label { font-size: var(--font-small-size); color: var(--color-neutral-600); }
+.field {
+  border: 1px solid var(--color-neutral-300);
+  border-radius: 8px;
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-body-size);
+  color: var(--color-dark);
+  background: var(--color-neutral-white);
+  min-height: 44px;
+  transition: border-color 150ms ease;
+}
+.field[data-state="filled"] { border-color: var(--color-neutral-600); }
+.field[data-state="error"] { border-color: var(--color-error); }
+.field:focus {
+  border-color: var(--color-primary);
+  outline: 2px solid var(--color-primary);
+  outline-offset: -1px;
+}
+.field::placeholder { color: var(--color-neutral-300); }
+.field:disabled {
+  background: var(--color-neutral-50);
+  color: var(--color-neutral-300);
+  cursor: not-allowed;
+}
+.error { font-size: var(--font-small-size); color: var(--color-error); }
+
+/* Select + Date wrapper for icon positioning */
+.selectWrapper,
+.dateWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Remove native browser chrome from select and date */
+.select,
+.dateField {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: var(--space-2xl); /* 48px — room for icon */
+  cursor: pointer;
+  width: 100%;
+}
+
+/* Custom icon positioned inside field */
+.fieldIcon {
+  position: absolute;
+  right: var(--space-md);
+  bottom: 0;
+  height: 44px; /* matches min-height of .field */
+  display: flex;
+  align-items: center;
+  color: var(--color-neutral-600);
+  pointer-events: none;
+}
+
+/* Date input: hide native calendar button in WebKit */
+.dateField::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  width: var(--space-2xl);
+  height: 100%;
+  cursor: pointer;
+}

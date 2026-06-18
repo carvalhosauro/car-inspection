@@ -1,0 +1,81 @@
+.bar {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  background: var(--color-neutral-white);
+  border-top: 1px solid var(--color-neutral-300);
+  padding: var(--space-sm);
+  padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom, 0px));
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 44px;
+  min-width: 44px;
+  border: none;
+  background: transparent;
+  color: var(--color-neutral-600);
+  font-size: var(--font-small-size);
+  cursor: pointer;
+  position: relative;
+  transition: color 150ms ease;
+  padding: var(--space-xs);
+  border-radius: 8px;
+}
+
+.tab:hover:not([aria-current="page"]):not([data-center="true"]) {
+  color: var(--color-primary);
+  background: rgba(37, 99, 235, 0.06);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.tab:active {
+  transform: scale(0.95);
+}
+
+.tab[aria-current="page"] {
+  color: var(--color-primary);
+}
+
+.tab[data-center="true"] {
+  background: var(--color-primary);
+  color: var(--color-neutral-white);
+  border-radius: 9999px;
+  width: 56px;
+  height: 56px;
+  justify-content: center;
+  transform: translateY(-12px);
+}
+
+.tab[data-center="true"]:hover {
+  color: var(--color-neutral-white);
+}
+
+.tab[data-center="true"] span:last-child {
+  display: none;
+}
+
+.badge {
+  position: absolute;
+  top: -4px;
+  right: 8px;
+  background: var(--color-error);
+  color: var(--color-neutral-white);
+  border-radius: 9999px;
+  font-size: 10px;
+  min-width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}

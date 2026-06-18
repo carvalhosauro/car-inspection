@@ -1,0 +1,5 @@
+{
+  "extends": "@vistoria/config/tsconfig",
+  "compilerOptions": { "outDir": "dist", "jsx": "react-jsx" },
+  "include": ["src", "vitest.setup.ts", ".storybook"]
+}
