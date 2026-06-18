@@ -2,6 +2,7 @@ export const colors = {
   primary: "#2563EB",
   dark: "#0F172A",
   success: "#22C55E",
+  successText: "#166534",
   warning: "#F59E0B",
   error: "#EF4444",
   neutralWhite: "#FFFFFF",
