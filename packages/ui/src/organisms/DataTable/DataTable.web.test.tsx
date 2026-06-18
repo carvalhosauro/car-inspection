@@ -81,4 +81,19 @@ describe("DataTable (web)", () => {
     expect(screen.getByRole("button", { name: "Anterior" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Próximo" })).toBeDisabled();
   });
+
+  it("shows empty message when rows is empty", () => {
+    render(<DataTable columns={columns} rows={[]} />);
+    expect(screen.getByText("Nenhum registro encontrado")).toBeInTheDocument();
+  });
+
+  it("accepts custom emptyMessage", () => {
+    render(<DataTable columns={columns} rows={[]} emptyMessage="Sem vistorias" />);
+    expect(screen.getByText("Sem vistorias")).toBeInTheDocument();
+  });
+
+  it("shows loading skeleton and aria-busy when loading", () => {
+    render(<DataTable columns={columns} rows={[]} loading />);
+    expect(screen.getByRole("table")).toHaveAttribute("aria-busy", "true");
+  });
 });

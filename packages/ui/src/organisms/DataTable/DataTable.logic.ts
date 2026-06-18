@@ -9,6 +9,8 @@ export interface Column<T> {
 export interface DataTableProps<T extends Record<string, unknown>> {
   columns: Column<T>[];
   rows: T[];
+  loading?: boolean;
+  emptyMessage?: string;
   page?: number;
   totalPages?: number;
   onPrev?: () => void;
