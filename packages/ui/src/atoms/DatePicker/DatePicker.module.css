@@ -1,0 +1,89 @@
+.wrapper { display: flex; flex-direction: column; gap: var(--space-xs); }
+.label { font-size: var(--font-small-size); color: var(--color-neutral-600); }
+
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: 8px;
+  background: var(--color-neutral-white);
+  font-size: var(--font-body-size);
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: border-color 150ms ease;
+}
+.trigger:hover { border-color: var(--color-neutral-600); }
+.trigger:focus-visible { outline: 2px solid var(--color-primary); outline-offset: -1px; border-color: var(--color-primary); }
+.trigger:disabled { opacity: 0.45; cursor: not-allowed; background: var(--color-neutral-50); }
+.value { color: var(--color-dark); }
+.placeholder { color: var(--color-neutral-300); }
+.triggerIcon { color: var(--color-neutral-600); flex-shrink: 0; }
+
+.content {
+  background: var(--color-neutral-white);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 50;
+  padding: var(--space-sm);
+  animation: fadeIn 150ms ease;
+
+  /* react-day-picker v10 theme variables mapped to the design system */
+  --rdp-accent-color: var(--color-primary);
+  --rdp-accent-background-color: var(--color-neutral-50);
+  --rdp-today-color: var(--color-primary);
+  --rdp-day_button-border-radius: 6px;
+  --rdp-selected-border: none;
+  --rdp-font-family: var(--font-family);
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Override react-day-picker v10 styles with design tokens */
+.content :global(.rdp-root) {
+  font-family: var(--font-family);
+}
+.content :global(.rdp-selected .rdp-day_button) {
+  background-color: var(--color-primary) !important;
+  color: var(--color-neutral-white) !important;
+  border: none !important;
+  font-weight: 600;
+}
+.content :global(.rdp-day_button:hover:not([disabled])) {
+  background-color: var(--color-neutral-50) !important;
+  color: var(--color-primary) !important;
+}
+.content :global(.rdp-selected .rdp-day_button:hover) {
+  background-color: var(--color-primary) !important;
+  color: var(--color-neutral-white) !important;
+}
+.content :global(.rdp-button_next:hover),
+.content :global(.rdp-button_previous:hover) {
+  background-color: var(--color-neutral-50) !important;
+}
+.content :global(.rdp-chevron) {
+  fill: var(--color-neutral-600) !important;
+}
+.content :global(.rdp-caption_label) {
+  font-family: var(--font-family) !important;
+  font-size: var(--font-body-size) !important;
+  font-weight: 600 !important;
+  color: var(--color-dark) !important;
+}
+.content :global(.rdp-weekday) {
+  font-family: var(--font-family) !important;
+  font-size: var(--font-small-size) !important;
+  color: var(--color-neutral-600) !important;
+}
+.content :global(.rdp-day_button) {
+  font-family: var(--font-family) !important;
+  font-size: var(--font-body-size) !important;
+}
+
+.error { font-size: var(--font-small-size); color: var(--color-error); }
