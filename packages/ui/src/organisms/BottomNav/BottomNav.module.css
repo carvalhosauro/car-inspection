@@ -5,6 +5,7 @@
   background: var(--color-neutral-white);
   border-top: 1px solid var(--color-neutral-300);
   padding: var(--space-sm);
+  padding-bottom: calc(var(--space-sm) + env(safe-area-inset-bottom, 0px));
 }
 
 .tab {
@@ -21,16 +22,24 @@
   font-size: var(--font-small-size);
   cursor: pointer;
   position: relative;
+  transition: color 150ms ease;
+  padding: var(--space-xs);
+  border-radius: 8px;
 }
 
-.tab:hover {
+.tab:hover:not([aria-current="page"]):not([data-center="true"]) {
   color: var(--color-primary);
+  background: rgba(37, 99, 235, 0.06);
 }
 
 .tab:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
   border-radius: 8px;
+}
+
+.tab:active {
+  transform: scale(0.95);
 }
 
 .tab[aria-current="page"] {
