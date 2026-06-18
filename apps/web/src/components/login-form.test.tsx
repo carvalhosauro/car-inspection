@@ -28,7 +28,7 @@ describe("LoginForm", () => {
     await userEvent.click(screen.getByRole("button", { name: /entrar/i }));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
-    const [url, init] = fetchMock.mock.calls[0];
+    const [url, init] = fetchMock.mock.calls[0]!;
     expect(url).toBe("/api/session");
     expect(init.method).toBe("POST");
     expect(JSON.parse(init.body)).toEqual({ email: "g@d.dev", password: "senha123" });
