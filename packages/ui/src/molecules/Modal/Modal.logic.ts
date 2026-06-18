@@ -10,6 +10,7 @@ export interface ModalProps {
   cancelLabel?: string;
   onConfirm?: () => void;
   onCancel?: () => void;
+  onClose?: () => void;
   children?: ReactNode;
 }
 
