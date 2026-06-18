@@ -7,7 +7,19 @@
   font-size: var(--font-body-size);
   color: var(--color-dark);
   background: var(--color-neutral-white);
+  min-height: 44px;
+  transition: border-color 150ms ease;
 }
 .field[data-state="filled"] { border-color: var(--color-neutral-600); }
 .field[data-state="error"] { border-color: var(--color-error); }
+.field:focus {
+  border-color: var(--color-primary);
+  outline: 2px solid var(--color-primary);
+  outline-offset: -1px;
+}
+.field:disabled {
+  background: var(--color-neutral-50);
+  color: var(--color-neutral-300);
+  cursor: not-allowed;
+}
 .error { font-size: var(--font-small-size); color: var(--color-error); }
