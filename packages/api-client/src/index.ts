@@ -6,6 +6,7 @@ import type {
 import { createHttp, type TokenGetter } from "./http";
 
 export { ApiError } from "./http";
+export type { TokenGetter } from "./http";
 
 export function createApiClient(baseUrl: string, getToken: TokenGetter) {
   const http = createHttp(baseUrl, getToken);
