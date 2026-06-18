@@ -3,6 +3,8 @@
   flex-direction: column;
   gap: var(--space-sm);
   background: var(--color-neutral-white);
+  overflow-x: auto;
+  width: 100%;
 }
 
 .table {
@@ -56,4 +58,29 @@
 .pageButton:disabled {
   color: var(--color-neutral-300);
   cursor: not-allowed;
+}
+
+.emptyCell {
+  text-align: center;
+  padding: var(--space-2xl) var(--space-md);
+  color: var(--color-neutral-600);
+  font-size: var(--font-body-size);
+}
+
+.skeletonRow td { padding: var(--space-sm) var(--space-md); }
+
+.skeletonCell { padding: var(--space-sm) var(--space-md); }
+
+.shimmer {
+  display: block;
+  height: 16px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--color-neutral-50) 25%, var(--color-neutral-300) 50%, var(--color-neutral-50) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
