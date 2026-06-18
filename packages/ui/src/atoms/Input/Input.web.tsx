@@ -19,6 +19,7 @@ export const Input: FC<InputProps> = (props) => {
           aria-invalid={isError || undefined}
           value={props.value}
           onChange={handle}
+          disabled={props.disabled}
         >
           {(props.options ?? []).map((o) => (
             <option key={o.value} value={o.value}>
@@ -41,6 +42,7 @@ export const Input: FC<InputProps> = (props) => {
           placeholder={props.placeholder}
           value={props.value}
           onChange={handle}
+          disabled={props.disabled}
         />
       )}
       {props.errorMessage ? (

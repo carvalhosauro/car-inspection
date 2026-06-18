@@ -1,4 +1,7 @@
 .tag { display: inline-flex; align-items: center; gap: var(--space-sm); }
-.pin { color: var(--color-primary); font-size: var(--font-body-size); }
+.pin { font-size: var(--font-body-size); }
 .location { font-size: var(--font-body-size); color: var(--color-dark); }
-.validated { font-size: var(--font-small-size); color: var(--color-success); font-weight: 600; }
+.statusLabel { font-size: var(--font-small-size); font-weight: 600; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 1s linear infinite; }
