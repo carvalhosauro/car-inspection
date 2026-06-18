@@ -10,5 +10,25 @@
   background: var(--color-neutral-50);
   color: var(--color-dark);
   font-size: var(--font-body-size);
+  min-width: 44px;
+  min-height: 44px;
+  transition: background 150ms ease, transform 100ms ease;
 }
 .button[data-ghost="true"] { background: transparent; }
+
+/* Interactive states */
+.button:hover:not(:disabled) {
+  background: rgba(37, 99, 235, 0.08);
+}
+.button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+.button:active:not(:disabled) {
+  background: rgba(37, 99, 235, 0.16);
+  transform: scale(0.95);
+}
+.button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
