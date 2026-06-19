@@ -3,7 +3,11 @@ import { formatDate, formatPlate, formatInspectionStatus } from "./format";
 
 describe("format helpers", () => {
   it("formats an ISO datetime as pt-BR date+time", () => {
-    expect(formatDate("2026-06-10T13:45:00.000Z")).toMatch(/2026/);
+    const result = formatDate("2026-01-15T10:30:00.000Z");
+    expect(result).toMatch(/15/);           // day present
+    expect(result).toMatch(/2026/);         // year present
+    expect(result).toMatch(/:/);            // time separator present
+    expect(result).toMatch(/\d{2}:\d{2}/); // hh:mm pattern
   });
 
   it("returns a dash for null dates", () => {

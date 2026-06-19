@@ -26,7 +26,7 @@ describe("TemplateEditor", () => {
     renderEditor();
     const select = screen.getByLabelText(/tipo de prova/i) as HTMLSelectElement;
     const values = Array.from(select.options).map((o) => o.value);
-    for (const kind of PROOF_KINDS) expect(values).toContain(kind);
+    expect(values).toEqual(expect.arrayContaining([...PROOF_KINDS]));
   });
 
   it("builds and submits a template with items and requirements", async () => {

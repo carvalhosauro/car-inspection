@@ -9,11 +9,12 @@ import { VehiclesTable } from "./vehicles-table";
 const createMock = vi.fn();
 const removeMock = vi.fn();
 const listMock = vi.fn();
+const updateMock = vi.fn();
 
 vi.mock("@/lib/api-browser", () => ({
   browserApi: () => ({
     base: { vehicles: { create: createMock, list: listMock } },
-    vehicles: { update: vi.fn(), remove: removeMock },
+    vehicles: { update: updateMock, remove: removeMock },
   }),
 }));
 
@@ -43,6 +44,7 @@ describe("VehiclesTable", () => {
   beforeEach(() => {
     createMock.mockReset();
     removeMock.mockReset();
+    updateMock.mockReset();
     listMock.mockReset().mockResolvedValue({ items: [VEHICLE], nextCursor: null });
   });
 
@@ -63,5 +65,22 @@ describe("VehiclesTable", () => {
     renderTable("superadmin");
     expect(screen.queryByRole("button", { name: /novo veículo/i })).toBeNull();
     expect(screen.queryByRole("button", { name: /excluir/i })).toBeNull();
+  });
+
+  it("opens edit dialog and calls update on submit", async () => {
+    updateMock.mockResolvedValue({ ...VEHICLE, model: "Polo" });
+    renderTable("gestor");
+
+    await userEvent.click(screen.getByRole("button", { name: /editar/i }));
+    const modelInput = screen.getByLabelText(/modelo/i);
+    await userEvent.clear(modelInput);
+    await userEvent.type(modelInput, "Polo");
+    await userEvent.click(screen.getByRole("button", { name: /^salvar$/i }));
+
+    await waitFor(() => expect(updateMock).toHaveBeenCalledTimes(1));
+    expect(updateMock).toHaveBeenCalledWith(
+      "v1",
+      expect.objectContaining({ model: "Polo" }),
+    );
   });
 });
