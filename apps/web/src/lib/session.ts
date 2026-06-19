@@ -1,3 +1,4 @@
+import { z } from "zod";
 import type { UserRole } from "@vistoria/contracts";
 
 export const SESSION_COOKIE = "vistoria_session";
@@ -8,6 +9,13 @@ export interface WebSession {
   role: UserRole;
   tenantId: string | null;
 }
+
+const WebSessionSchema = z.object({
+  accessToken: z.string(),
+  refreshToken: z.string(),
+  role: z.enum(["superadmin", "gestor", "supervisor", "vistoriador"]),
+  tenantId: z.string().nullable(),
+});
 
 const WEB_ROLES: ReadonlySet<UserRole> = new Set<UserRole>([
   "superadmin",
@@ -29,20 +37,12 @@ export function decodeSession(value: string | undefined | null): WebSession | nu
   if (!value) return null;
   try {
     const json = Buffer.from(value, "base64url").toString("utf8");
-    const parsed = JSON.parse(json) as Partial<WebSession>;
-    if (
-      typeof parsed.accessToken !== "string" ||
-      typeof parsed.refreshToken !== "string" ||
-      typeof parsed.role !== "string"
-    ) {
+    const result = WebSessionSchema.safeParse(JSON.parse(json));
+    if (!result.success) {
+      console.debug("[session] decode error:", result.error);
       return null;
     }
-    return {
-      accessToken: parsed.accessToken,
-      refreshToken: parsed.refreshToken,
-      role: parsed.role as UserRole,
-      tenantId: parsed.tenantId ?? null,
-    };
+    return result.data as WebSession;
   } catch (err) {
     console.debug("[session] decode error:", err);
     return null;

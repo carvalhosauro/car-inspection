@@ -1,14 +1,10 @@
-import { redirect } from "next/navigation";
-import { serverApi, getServerSession } from "@/lib/api-server";
-import { can } from "@/lib/rbac";
+import { serverApi } from "@/lib/api-server";
+import { requireAction } from "@/lib/server-guard";
 import { ReportCharts } from "@/components/report-charts";
 
 export default async function ReportsPage() {
-  const session = await getServerSession();
-  if (!session) redirect("/login");
-  if (!can(session.role, "viewReports")) {
-    return <p className="text-muted-foreground">Sem permissão para ver relatórios.</p>;
-  }
+  const { denied } = await requireAction("viewReports");
+  if (denied) return <p className="text-muted-foreground">Sem permissão para ver relatórios.</p>;
 
   const api = await serverApi();
   const [damages, pending, avgTime] = await Promise.all([

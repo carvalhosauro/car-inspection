@@ -1,15 +1,11 @@
-import { redirect } from "next/navigation";
-import { serverApi, getServerSession } from "@/lib/api-server";
-import { can } from "@/lib/rbac";
+import { serverApi } from "@/lib/api-server";
+import { requireAction } from "@/lib/server-guard";
 import { TemplateEditor } from "@/components/template-editor";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function ChecklistsPage() {
-  const session = await getServerSession();
-  if (!session) redirect("/login");
-  if (!can(session.role, "crudTemplates")) {
-    return <p className="text-muted-foreground">Apenas o gestor gerencia templates de checklist.</p>;
-  }
+  const { denied } = await requireAction("crudTemplates");
+  if (denied) return <p className="text-muted-foreground">Apenas o gestor gerencia templates de checklist.</p>;
 
   const api = await serverApi();
   const { items } = await api.base.templates.list();

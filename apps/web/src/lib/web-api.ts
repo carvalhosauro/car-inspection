@@ -69,19 +69,21 @@ async function call<T>(
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   const text = await res.text();
+  // caller is responsible for ensuring T matches the API contract
   let data: unknown;
   try {
-    data = text ? JSON.parse(text) : undefined;
+    data = text ? (JSON.parse(text) as unknown) : undefined;
   } catch (err) {
     console.error("[web-api] parse error:", { status: res.status, text: text.slice(0, 200) });
     throw err;
   }
   if (!res.ok) {
+    const errData = data as Record<string, unknown> | undefined;
     throw new ApiError(
       res.status,
-      data?.code ?? "unknown",
-      data?.message ?? res.statusText,
-      data?.details,
+      (errData?.code as string) ?? "unknown",
+      (errData?.message as string) ?? res.statusText,
+      errData?.details,
     );
   }
   return data as T;
