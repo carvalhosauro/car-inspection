@@ -3,7 +3,7 @@
 import { useRef, useState, type FormEvent } from "react";
 import type { CreateUserInput } from "@vistoria/contracts";
 import { Button } from "@vistoria/ui/atoms/Button";
-import { HtmlInput } from "@/components/ui/html-input";
+import { FormField } from "@/components/ui/form-field";
 import { Label } from "@/components/ui/label";
 import { NativeSelect } from "@/components/ui/select";
 
@@ -33,18 +33,9 @@ export function UserFormDialog({
 
   return (
     <form ref={formRef} onSubmit={submit} className="grid max-w-2xl gap-3 rounded-lg border border-border p-4 md:grid-cols-2">
-      <div className="space-y-2">
-        <Label htmlFor="u-name">Nome</Label>
-        <HtmlInput id="u-name" value={name} onChange={(e) => setName(e.target.value)} required />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="u-email">E-mail</Label>
-        <HtmlInput id="u-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="u-password">Senha</Label>
-        <HtmlInput id="u-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-      </div>
+      <FormField id="u-name" label="Nome" value={name} onChange={(e) => setName(e.target.value)} required />
+      <FormField id="u-email" label="E-mail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+      <FormField id="u-password" label="Senha" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
       <div className="space-y-2">
         <Label htmlFor="u-role">Papel</Label>
         <NativeSelect id="u-role" value={role} onChange={(e) => setRole(e.target.value as CreatableRole)}>

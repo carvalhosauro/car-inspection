@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInvalidateOnSuccess } from "@/lib/mutation-utils";
 import type { VehicleDto, CreateVehicleInput, UserRole } from "@vistoria/contracts";
 import { browserApi } from "@/lib/api-browser";
 import { can } from "@/lib/rbac";
@@ -49,7 +50,7 @@ export function VehiclesTable({
 
   const removeMut = useMutation({
     mutationFn: (id: string) => api.vehicles.remove(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["vehicles"] }),
+    ...useInvalidateOnSuccess(["vehicles"]),
   });
 
   return (

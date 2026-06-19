@@ -5,7 +5,7 @@ import type { VehicleDto, CreateVehicleInput, VehicleStatus } from "@vistoria/co
 import { VEHICLE_STATUSES } from "@vistoria/contracts";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@vistoria/ui/atoms/Button";
-import { HtmlInput } from "@/components/ui/html-input";
+import { FormField } from "@/components/ui/form-field";
 import { Label } from "@/components/ui/label";
 import { NativeSelect } from "@/components/ui/select";
 
@@ -46,29 +46,14 @@ export function VehicleFormDialog({
     <Dialog open={open} onClose={onClose}>
       <form ref={formRef} onSubmit={submit} className="space-y-4">
         <h2 className="text-lg font-semibold">{initial ? "Editar veículo" : "Novo veículo"}</h2>
-        <div className="space-y-2">
-          <Label htmlFor="plate">Placa</Label>
-          <HtmlInput id="plate" value={plate} onChange={(e) => setPlate(e.target.value)} required />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="model">Modelo</Label>
-          <HtmlInput id="model" value={model} onChange={(e) => setModel(e.target.value)} required />
+        <FormField id="plate" label="Placa" value={plate} onChange={(e) => setPlate(e.target.value)} required />
+        <FormField id="model" label="Modelo" value={model} onChange={(e) => setModel(e.target.value)} required />
+        <div className="grid grid-cols-2 gap-3">
+          <FormField id="year" label="Ano" type="number" value={year} onChange={(e) => setYear(e.target.value)} />
+          <FormField id="color" label="Cor" value={color} onChange={(e) => setColor(e.target.value)} />
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-2">
-            <Label htmlFor="year">Ano</Label>
-            <HtmlInput id="year" type="number" value={year} onChange={(e) => setYear(e.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="color">Cor</Label>
-            <HtmlInput id="color" value={color} onChange={(e) => setColor(e.target.value)} />
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-2">
-            <Label htmlFor="km">Km atual</Label>
-            <HtmlInput id="km" type="number" value={currentKm} onChange={(e) => setCurrentKm(e.target.value)} />
-          </div>
+          <FormField id="km" label="Km atual" type="number" value={currentKm} onChange={(e) => setCurrentKm(e.target.value)} />
           <div className="space-y-2">
             <Label htmlFor="status">Situação</Label>
             <NativeSelect

@@ -49,37 +49,25 @@ export function ReportCharts({
   pending: PendingByInspector[];
   avgTime: AvgInspectionTime[];
 }) {
+  const CHARTS = [
+    { title: "Avarias por veículo", data: damages as object[], xKey: "plate", dataKey: "damages", allowDecimals: false as boolean | undefined },
+    { title: "Pendentes por vistoriador", data: pending as object[], xKey: "name", dataKey: "pending", allowDecimals: false as boolean | undefined },
+    { title: "Tempo médio de vistoria (min)", data: avgTime as object[], xKey: "type", dataKey: "avgMinutes", allowDecimals: undefined as boolean | undefined },
+  ];
+
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <ChartCard title="Avarias por veículo">
-        <BarChart data={damages}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="plate" />
-          <YAxis allowDecimals={false} />
-          <Tooltip />
-          <Bar dataKey="damages" fill="hsl(var(--primary))" />
-        </BarChart>
-      </ChartCard>
-
-      <ChartCard title="Pendentes por vistoriador">
-        <BarChart data={pending}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis allowDecimals={false} />
-          <Tooltip />
-          <Bar dataKey="pending" fill="hsl(var(--primary))" />
-        </BarChart>
-      </ChartCard>
-
-      <ChartCard title="Tempo médio de vistoria (min)">
-        <BarChart data={avgTime}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="type" />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey="avgMinutes" fill="hsl(var(--primary))" />
-        </BarChart>
-      </ChartCard>
+      {CHARTS.map((c) => (
+        <ChartCard key={c.title} title={c.title}>
+          <BarChart data={c.data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey={c.xKey} />
+            <YAxis allowDecimals={c.allowDecimals} />
+            <Tooltip />
+            <Bar dataKey={c.dataKey} fill="hsl(var(--primary))" />
+          </BarChart>
+        </ChartCard>
+      ))}
     </div>
   );
 }
