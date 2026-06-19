@@ -43,7 +43,8 @@ export function decodeSession(value: string | undefined | null): WebSession | nu
       role: parsed.role as UserRole,
       tenantId: parsed.tenantId ?? null,
     };
-  } catch {
+  } catch (err) {
+    console.debug("[session] decode error:", err);
     return null;
   }
 }

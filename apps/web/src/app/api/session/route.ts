@@ -8,7 +8,14 @@ import {
   isWebRoleAllowed,
 } from "@/lib/session";
 
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days (refresh-token lifetime)
+const REFRESH_TOKEN_LIFETIME_SECONDS = 60 * 60 * 24 * 7; // 7 days
+
+const sessionCookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax" as const,
+  path: "/",
+} as const;
 
 export async function POST(request: Request): Promise<Response> {
   const json = await request.json().catch(() => null);
@@ -20,11 +27,13 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
+  const { email } = parsed.data;
   const api = createWebApi(getApiUrl(), () => null);
   let tokens;
   try {
     tokens = await api.base.auth.login(parsed.data);
-  } catch {
+  } catch (err) {
+    console.error("[session] login failed:", { email, error: err });
     return NextResponse.json(
       { code: "invalid_credentials", message: "Credenciais inválidas" },
       { status: 401 },
@@ -50,11 +59,8 @@ export async function POST(request: Request): Promise<Response> {
 
   const res = NextResponse.json({ ok: true, accessToken: tokens.accessToken, role: me.role, name: me.name });
   res.cookies.set(SESSION_COOKIE, value, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: COOKIE_MAX_AGE,
+    ...sessionCookieOptions,
+    maxAge: REFRESH_TOKEN_LIFETIME_SECONDS,
   });
   return res;
 }
@@ -62,10 +68,7 @@ export async function POST(request: Request): Promise<Response> {
 export async function DELETE(): Promise<Response> {
   const res = NextResponse.json({ ok: true });
   res.cookies.set(SESSION_COOKIE, "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
+    ...sessionCookieOptions,
     maxAge: 0,
   });
   return res;

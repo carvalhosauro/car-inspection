@@ -69,7 +69,13 @@ async function call<T>(
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   const text = await res.text();
-  const data = text ? JSON.parse(text) : undefined;
+  let data: unknown;
+  try {
+    data = text ? JSON.parse(text) : undefined;
+  } catch (err) {
+    console.error("[web-api] parse error:", { status: res.status, text: text.slice(0, 200) });
+    throw err;
+  }
   if (!res.ok) {
     throw new ApiError(
       res.status,
