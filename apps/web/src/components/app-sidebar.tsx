@@ -5,6 +5,7 @@ import { Sidebar } from "@vistoria/ui/organisms/Sidebar";
 import type { UserRole } from "@vistoria/contracts";
 import { can, type Action } from "@/lib/rbac";
 import { Button } from "@vistoria/ui/atoms/Button";
+import { setAccessToken } from "@/lib/token-store";
 
 interface NavItem {
   id: string;
@@ -49,6 +50,7 @@ export function AppSidebar({ role }: { role: UserRole }) {
   }
 
   async function logout() {
+    setAccessToken(null);
     await fetch("/api/session", { method: "DELETE" });
     router.push("/login");
     router.refresh();

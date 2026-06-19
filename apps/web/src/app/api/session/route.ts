@@ -48,10 +48,10 @@ export async function POST(request: Request): Promise<Response> {
     tenantId: me.tenantId,
   });
 
-  const res = NextResponse.json({ role: me.role, name: me.name });
+  const res = NextResponse.json({ ok: true, accessToken: tokens.accessToken, role: me.role, name: me.name });
   res.cookies.set(SESSION_COOKIE, value, {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
     maxAge: COOKIE_MAX_AGE,
@@ -63,7 +63,7 @@ export async function DELETE(): Promise<Response> {
   const res = NextResponse.json({ ok: true });
   res.cookies.set(SESSION_COOKIE, "", {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
     maxAge: 0,

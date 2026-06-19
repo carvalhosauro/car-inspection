@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@vistoria/ui/atoms/Button";
 import { HtmlInput } from "@/components/ui/html-input";
 import { Label } from "@/components/ui/label";
+import { setAccessToken } from "@/lib/token-store";
 
 export function LoginForm() {
   const router = useRouter();
@@ -27,6 +28,8 @@ export function LoginForm() {
         setError(data?.message ?? "Falha no login");
         return;
       }
+      const data = await res.json().catch(() => null);
+      setAccessToken(data?.accessToken ?? null);
       router.push("/dashboard");
       router.refresh();
     } finally {

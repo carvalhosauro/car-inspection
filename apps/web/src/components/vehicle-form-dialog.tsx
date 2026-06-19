@@ -7,6 +7,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@vistoria/ui/atoms/Button";
 import { HtmlInput } from "@/components/ui/html-input";
 import { Label } from "@/components/ui/label";
+import { NativeSelect } from "@/components/ui/select";
 
 export function VehicleFormDialog({
   open,
@@ -70,16 +71,15 @@ export function VehicleFormDialog({
           </div>
           <div className="space-y-2">
             <Label htmlFor="status">Situação</Label>
-            <select
+            <NativeSelect
               id="status"
               value={status}
               onChange={(e) => setStatus(e.target.value as VehicleStatus)}
-              className="flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm"
             >
               {VEHICLE_STATUSES.map((s) => (
                 <option key={s} value={s}>{s}</option>
               ))}
-            </select>
+            </NativeSelect>
           </div>
         </div>
         <div className="flex justify-end gap-2">
