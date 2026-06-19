@@ -7,9 +7,19 @@ import type { InspectionDto } from "@vistoria/contracts";
 import { AuditQueue } from "./audit-queue";
 
 const auditMock = vi.fn();
+const invalidateQueriesMock = vi.fn();
+
 vi.mock("@/lib/api-browser", () => ({
   browserApi: () => ({ inspections: { audit: auditMock } }),
 }));
+
+vi.mock("@tanstack/react-query", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@tanstack/react-query")>();
+  return {
+    ...actual,
+    useQueryClient: () => ({ invalidateQueries: invalidateQueriesMock }),
+  };
+});
 
 const PENDING: InspectionDto = {
   id: "i1",
@@ -38,13 +48,19 @@ function renderQueue(role: "gestor" | "superadmin") {
 }
 
 describe("AuditQueue", () => {
-  beforeEach(() => auditMock.mockReset().mockResolvedValue({ ...PENDING, status: "aprovada" }));
+  beforeEach(() => {
+    auditMock.mockReset().mockResolvedValue({ ...PENDING, status: "aprovada" });
+    invalidateQueriesMock.mockReset();
+  });
 
   it("approves an inspection via PATCH audit", async () => {
     renderQueue("gestor");
     await userEvent.click(screen.getByRole("button", { name: /aprovar/i }));
     await waitFor(() => expect(auditMock).toHaveBeenCalledTimes(1));
     expect(auditMock.mock.calls[0]).toEqual(["i1", { decision: "aprovada", auditNote: undefined }]);
+    await waitFor(() =>
+      expect(invalidateQueriesMock).toHaveBeenCalledWith({ queryKey: ["audit-queue"] }),
+    );
   });
 
   it("hides audit actions for a role without auditInspections", () => {

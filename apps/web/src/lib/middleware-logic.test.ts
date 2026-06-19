@@ -35,4 +35,12 @@ describe("decideRedirect", () => {
   it("leaves an anonymous user on /login", () => {
     expect(decideRedirect("/login", undefined)).toBeNull();
   });
+
+  it("redirects to /login for empty pathname with no cookie", () => {
+    expect(decideRedirect("", undefined)).toBe("/login");
+  });
+
+  it("redirects to /login for malformed cookie value", () => {
+    expect(decideRedirect("/dashboard", "not-valid-base64!!!")).toBe("/login");
+  });
 });

@@ -3,13 +3,15 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 const pushMock = vi.fn();
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: pushMock, refresh: vi.fn() }) }));
+const refreshMock = vi.fn();
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: pushMock, refresh: refreshMock }) }));
 
 import { LoginForm } from "./login-form";
 
 describe("LoginForm", () => {
   beforeEach(() => {
     pushMock.mockReset();
+    refreshMock.mockReset();
     vi.restoreAllMocks();
   });
 
@@ -33,6 +35,7 @@ describe("LoginForm", () => {
     expect(init.method).toBe("POST");
     expect(JSON.parse(init.body)).toEqual({ email: "g@d.dev", password: "senha123" });
     await waitFor(() => expect(pushMock).toHaveBeenCalledWith("/dashboard"));
+    await waitFor(() => expect(refreshMock).toHaveBeenCalled());
   });
 
   it("shows an error message on a failed login", async () => {
