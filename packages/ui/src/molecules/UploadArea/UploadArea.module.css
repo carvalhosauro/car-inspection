@@ -13,6 +13,12 @@
   text-align: center;
 }
 
+.area[data-state="uploading"] {
+  border-color: var(--color-primary);
+  opacity: 0.7;
+  cursor: wait;
+}
+
 .area[data-state="dragging"] {
   border-color: var(--color-primary);
   background: #DBEAFE;

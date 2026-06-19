@@ -14,7 +14,7 @@ export const Select: FC<SelectProps> = ({
   errorMessage
 }) => {
   return (
-    <label className={styles.wrapper}>
+    <div className={styles.wrapper}>
       {label ? <span className={styles.label}>{label}</span> : null}
       <RadixSelect.Root value={value} onValueChange={onValueChange} disabled={disabled}>
         <RadixSelect.Trigger className={styles.trigger} aria-label={label}>
@@ -39,6 +39,6 @@ export const Select: FC<SelectProps> = ({
         </RadixSelect.Portal>
       </RadixSelect.Root>
       {errorMessage ? <span className={styles.error}>{errorMessage}</span> : null}
-    </label>
+    </div>
   );
 };

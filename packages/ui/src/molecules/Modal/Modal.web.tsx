@@ -21,8 +21,8 @@ export const Modal: FC<ModalProps> = (props) => {
   return (
     <div
       className={styles.overlay}
+      data-testid="modal-overlay"
       onClick={onClose}
-      role="presentation"
     >
       <div
         className={styles.dialog}
