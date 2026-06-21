@@ -43,13 +43,15 @@ function wrap(ui: React.ReactElement) {
 }
 
 describe("Checklist", () => {
-  it("shows progress (1 of 2 done) and a row per item", async () => {
+  it("shows progress (1 of 2 done) and per-item actions", async () => {
     wrap(<Checklist />);
     await waitFor(() => expect(mockItemsFn).toHaveBeenCalledWith("insp-1"));
     await waitFor(() =>
       expect(screen.getByTestId("progress-label").props.children).toEqual([1, "/", 2, " concluídos"]),
     );
-    expect(screen.getByTestId("item-row-item-1")).toBeTruthy();
-    expect(screen.getByTestId("item-row-item-2")).toBeTruthy();
+    // photo action on both, ocr only on the ocr_km item, justify on both
+    expect(screen.getByTestId("photo-item-1")).toBeTruthy();
+    expect(screen.getByTestId("justify-item-1")).toBeTruthy();
+    expect(screen.getByTestId("ocr-item-2")).toBeTruthy();
   });
 });
