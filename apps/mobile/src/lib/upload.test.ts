@@ -16,7 +16,7 @@ describe("signAndUpload", () => {
   beforeEach(() => {
     (manipulateAsync as jest.Mock).mockClear();
     // single fetch: the multipart PUT to the signed url.
-    global.fetch = jest
+    globalThis.fetch = jest
       .fn()
       .mockResolvedValueOnce({ ok: true, status: 200 }) as unknown as typeof fetch;
   });
@@ -27,7 +27,7 @@ describe("signAndUpload", () => {
 
     expect(manipulateAsync).toHaveBeenCalledTimes(1);
     expect(sign).toHaveBeenCalledWith({ contentType: "image/jpeg" });
-    const putCall = (global.fetch as jest.Mock).mock.calls[0];
+    const putCall = (globalThis.fetch as jest.Mock).mock.calls[0];
     expect(putCall[0]).toBe(SIGNED_URL);
     expect(putCall[1].method).toBe("PUT");
     expect(putCall[1].body).toBeInstanceOf(FormData);
@@ -35,7 +35,7 @@ describe("signAndUpload", () => {
   });
 
   it("throws when the storage PUT fails", async () => {
-    global.fetch = jest
+    globalThis.fetch = jest
       .fn()
       .mockResolvedValueOnce({ ok: false, status: 500 }) as unknown as typeof fetch;
     const sign = makeSign();
