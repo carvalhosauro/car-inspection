@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react-native";
-import type { EvidenceDto } from "@vistoria/contracts";
+import type { CreateEvidenceInput, EvidenceDto } from "@vistoria/contracts";
 import PhotoScreen from "./[id]/photo";
 
 const rejected: EvidenceDto = {
@@ -19,7 +19,7 @@ const mockSign = jest.fn(async () => ({
   signedUrl: "https://storage.example/put",
   token: "tok",
 }));
-const mockCreate = jest.fn(async () => rejected);
+const mockCreate = jest.fn(async (_itemId: string, _body: CreateEvidenceInput) => rejected);
 
 jest.mock("@/lib/api", () => ({
   useApiClient: () => ({ uploads: { sign: mockSign }, evidences: { create: mockCreate } }),
