@@ -3,6 +3,8 @@
   "compilerOptions": {
     "strict": true,
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
+    "types": ["jest", "@testing-library/react-native"],
     "paths": {
       "@/*": ["./src/*"]
     }
