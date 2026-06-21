@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "Vistoria",
+    "slug": "vistoria-mobile",
+    "scheme": "vistoria",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": { "supportsTablet": false, "bundleIdentifier": "dev.vistoria.mobile" },
+    "android": { "package": "dev.vistoria.mobile" },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      ["expo-camera", { "cameraPermission": "Permitir acesso à câmera para registrar fotos da vistoria." }],
+      ["expo-location", { "locationWhenInUsePermission": "Permitir acesso à localização para concluir a vistoria." }]
+    ],
+    "experiments": { "typedRoutes": false }
+  }
+}
