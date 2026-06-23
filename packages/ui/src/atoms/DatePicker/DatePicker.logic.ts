@@ -8,7 +8,7 @@ export interface DatePickerProps {
 }
 
 export function formatDisplayDate(iso: string): string {
-  // "2026-01-15" -> "15/01/2026"
+  // Intl.DateTimeFormat is avoided to stay timezone-neutral (no UTC conversion)
   const [y, m, d] = iso.split("-");
   if (!y || !m || !d) return iso;
   return `${d}/${m}/${y}`;

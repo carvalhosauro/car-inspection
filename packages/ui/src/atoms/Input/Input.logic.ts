@@ -1,10 +1,13 @@
 export type InputType = "text" | "select" | "search" | "datepicker";
 export type InputState = "default" | "filled" | "error";
 
-export interface InputOption {
+export interface Option {
   label: string;
   value: string;
 }
+
+/** @deprecated Use {@link Option} */
+export type InputOption = Option;
 
 export interface InputProps {
   type?: InputType;
@@ -12,7 +15,7 @@ export interface InputProps {
   placeholder?: string;
   label?: string;
   errorMessage?: string;
-  options?: InputOption[];
+  options?: Option[];
   onChangeText?: (value: string) => void;
   disabled?: boolean;
 }

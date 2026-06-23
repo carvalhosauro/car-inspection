@@ -5,16 +5,20 @@ import { Badge } from "../../atoms/Badge/Badge.native";
 import { ProgressBar } from "../../atoms/ProgressBar/ProgressBar.native";
 import { formatKm, type VehicleCardProps } from "./VehicleCard.logic";
 
+const CARD_RADIUS = 12;
+const IMAGE_RADIUS = 8;
+const IMAGE_HEIGHT = 140;
+
 const styles = StyleSheet.create({
   card: {
     gap: spacing.sm,
     borderWidth: 1,
     borderColor: colors.neutral300,
-    borderRadius: 12,
+    borderRadius: CARD_RADIUS,
     padding: spacing.md,
     backgroundColor: colors.neutralWhite,
   },
-  image: { width: "100%", height: 140, borderRadius: 8, backgroundColor: colors.neutral50 },
+  image: { width: "100%", height: IMAGE_HEIGHT, borderRadius: IMAGE_RADIUS, backgroundColor: colors.neutral50 },
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   plate: { fontSize: 24, fontWeight: "600", color: colors.dark },
   model: { fontSize: 16, color: colors.dark },

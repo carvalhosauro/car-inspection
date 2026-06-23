@@ -24,7 +24,7 @@ export const BottomNav: FC<BottomNavProps> = ({
   return (
     <nav className={styles.bar} aria-label="Navegação inferior">
       {DEFAULT_TABS.map((tab) => {
-        const Icon = BOTTOM_NAV_ICONS[tab.id as keyof typeof BOTTOM_NAV_ICONS];
+        const Icon = BOTTOM_NAV_ICONS[tab.id];
         return (
           <button
             key={tab.id}

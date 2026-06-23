@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { UniqueCode } from "./UniqueCode.web";
 
@@ -9,6 +9,10 @@ describe("UniqueCode (web)", () => {
       ...navigator,
       clipboard: { writeText: vi.fn().mockResolvedValue(undefined) },
     });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it("renders the code", () => {
@@ -22,9 +26,18 @@ describe("UniqueCode (web)", () => {
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith("VST-AB12C9");
     expect(onCopied).toHaveBeenCalledOnce();
   });
-  it("shows a copied confirmation after copying", async () => {
+  it("shows a copied confirmation and hides it after the timeout", async () => {
+    vi.useFakeTimers();
     render(<UniqueCode code="VST-AB12C9" />);
-    await userEvent.click(screen.getByRole("button", { name: /copiar/i }));
-    expect(await screen.findByText("Copiado!")).toBeInTheDocument();
+    // fire click synchronously; await the clipboard promise resolution
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /copiar/i }));
+    });
+    expect(screen.getByText("Copiado!")).toBeInTheDocument();
+    act(() => {
+      vi.advanceTimersByTime(1500);
+    });
+    expect(screen.queryByText("Copiado!")).not.toBeInTheDocument();
+    vi.useRealTimers();
   });
 });

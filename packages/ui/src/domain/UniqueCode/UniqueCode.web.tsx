@@ -1,16 +1,10 @@
-import { useEffect, useState, type FC } from "react";
+import { type FC } from "react";
 import { Copy, Check } from "lucide-react";
-import type { UniqueCodeProps } from "./UniqueCode.logic";
+import { useCopied, type UniqueCodeProps } from "./UniqueCode.logic";
 import styles from "./UniqueCode.module.css";
 
 export const UniqueCode: FC<UniqueCodeProps> = ({ code, onCopied }) => {
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    if (!copied) return;
-    const timer = setTimeout(() => setCopied(false), 1500);
-    return () => clearTimeout(timer);
-  }, [copied]);
+  const [copied, setCopied] = useCopied();
 
   const copy = async () => {
     try {

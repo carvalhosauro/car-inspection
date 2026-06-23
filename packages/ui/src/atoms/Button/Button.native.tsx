@@ -10,13 +10,15 @@ const bg: Record<ButtonVariant, string> = {
   danger: colors.error
 };
 
+const BUTTON_RADIUS = 8;
+
 const styles = StyleSheet.create({
   base: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: spacing.sm,
-    borderRadius: 8,
+    borderRadius: BUTTON_RADIUS,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.lg
   },

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { colors, typography, spacing } from "./index";
+import { colors, typography, spacing, borderRadius, size } from "./index";
 
 describe("color tokens", () => {
   it("exposes the exact brand palette", () => {
@@ -12,6 +12,14 @@ describe("color tokens", () => {
     expect(colors.neutral50).toBe("#F8FAFC");
     expect(colors.neutral300).toBe("#CBD5E1");
     expect(colors.neutral600).toBe("#334155");
+  });
+
+  it("exposes the badge background palette", () => {
+    expect(colors.successBg).toBe("#DCFCE7");
+    expect(colors.primaryBg).toBe("#DBEAFE");
+    expect(colors.warningBg).toBe("#FEF3C7");
+    expect(colors.errorBg).toBe("#FEE2E2");
+    expect(colors.neutralBg).toBe("#F1F5F9");
   });
 });
 
@@ -32,5 +40,27 @@ describe("spacing tokens", () => {
     expect(spacing.md).toBe(16);
     expect(spacing.lg).toBe(24);
     expect(spacing.xl).toBe(32);
+  });
+
+  it("exposes xxs and large-scale entries", () => {
+    expect(spacing.xxs).toBe(2);
+    expect(spacing["2xl"]).toBe(48);
+    expect(spacing["3xl"]).toBe(64);
+  });
+});
+
+describe("borderRadius tokens", () => {
+  it("exposes the component radius scale", () => {
+    expect(borderRadius.pill).toBe(9999);
+    expect(borderRadius.button).toBe(8);
+    expect(borderRadius.card).toBe(12);
+    expect(borderRadius.image).toBe(8);
+  });
+});
+
+describe("size tokens", () => {
+  it("exposes dimension constants", () => {
+    expect(size.vehicleImageHeight).toBe(140);
+    expect(size.progressTrackHeight).toBe(8);
   });
 });

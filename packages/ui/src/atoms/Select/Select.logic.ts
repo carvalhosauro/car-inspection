@@ -1,10 +1,10 @@
-export interface SelectOption {
-  label: string;
-  value: string;
-}
+import type { Option } from "../Input/Input.logic";
+
+/** @deprecated Use {@link Option} */
+export type SelectOption = Option;
 
 export interface SelectProps {
-  options: SelectOption[];
+  options: Option[];
   value?: string;
   onValueChange?: (value: string) => void;
   placeholder?: string;
@@ -14,9 +14,9 @@ export interface SelectProps {
 }
 
 export function findSelectedOption(
-  options: SelectOption[],
+  options: Option[],
   value?: string
-): SelectOption | undefined {
+): Option | undefined {
   if (value === undefined) return undefined;
   return options.find((o) => o.value === value);
 }

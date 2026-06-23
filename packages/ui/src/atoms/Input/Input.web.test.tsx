@@ -34,4 +34,10 @@ describe("Input (web)", () => {
     render(<Input type="search" placeholder="Buscar" />);
     expect(screen.getByPlaceholderText("Buscar")).toHaveAttribute("type", "search");
   });
+  it("renders a date input for type datepicker", () => {
+    render(<Input type="datepicker" value="2026-01-15" />);
+    const dateInput = document.querySelector('input[type="date"]');
+    expect(dateInput).toBeInTheDocument();
+    expect(dateInput).toHaveValue("2026-01-15");
+  });
 });

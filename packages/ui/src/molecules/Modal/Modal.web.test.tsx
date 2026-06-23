@@ -30,7 +30,7 @@ describe("Modal (web)", () => {
   it("calls onClose when overlay is clicked", async () => {
     const onClose = vi.fn();
     render(<Modal open title="Test" onClose={onClose}><p>content</p></Modal>);
-    await userEvent.click(screen.getByRole("presentation"));
+    await userEvent.click(screen.getByTestId("modal-overlay"));
     expect(onClose).toHaveBeenCalled();
   });
   it("calls onClose when Escape is pressed", async () => {
