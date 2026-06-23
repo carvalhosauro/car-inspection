@@ -1,6 +1,6 @@
 import type { FastifyRequest } from "fastify";
 import { errors } from "../errors/app-error.js";
-import "./types";
+import "./types.js";
 
 export function requireTenant(request: FastifyRequest): string {
   if (request.ctx.tenantId === null) {
