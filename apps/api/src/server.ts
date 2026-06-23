@@ -4,7 +4,7 @@ import { env } from "./env.js";
 async function main() {
   const app = await buildApp();
   await app.listen({ port: env.PORT, host: "0.0.0.0" });
-  console.log(`API listening on :${env.PORT}`);
+  app.log.info(`API listening on :${env.PORT}`);
 }
 
 main().catch((err) => {
