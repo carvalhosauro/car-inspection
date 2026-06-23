@@ -9,7 +9,8 @@ import { can } from "@/lib/rbac";
 import { formatDate } from "@/lib/format";
 import { Button } from "@vistoria/ui/atoms/Button";
 import { StatusChip } from "@/components/ui/status-chip";
-import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
+import { Table, THead, TBody, TR, TH, TD, TableContainer, TableEmpty } from "@/components/ui/table";
+import { PageHeader } from "@/components/ui/page-header";
 import { VehicleFormDialog } from "@/components/vehicle-form-dialog";
 
 export function VehiclesTable({
@@ -54,58 +55,62 @@ export function VehiclesTable({
   });
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Frota</h1>
-        {canWrite && (
-          <Button label="Novo veículo" onPress={() => setCreating(true)} />
-        )}
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        title="Frota"
+        description="Veículos cadastrados na locadora e sua situação atual."
+        actions={canWrite && <Button label="Novo veículo" onPress={() => setCreating(true)} />}
+      />
 
-      <Table>
-        <THead>
-          <TR>
-            <TH>Placa</TH>
-            <TH>Modelo</TH>
-            <TH>Km</TH>
-            <TH>Situação</TH>
-            <TH>Criado</TH>
-            <TH />
-          </TR>
-        </THead>
-        <TBody>
-          {data.items.map((v) => (
-            <TR key={v.id}>
-              <TD className="font-mono">{v.plate}</TD>
-              <TD>{v.model}</TD>
-              <TD>{v.currentKm}</TD>
-              <TD>
-                <StatusChip>{v.status}</StatusChip>
-              </TD>
-              <TD>{formatDate(v.createdAt)}</TD>
-              <TD className="text-right">
-                {canWrite && (
-                  <span className="flex justify-end gap-2">
-                    <Button
-                      label="Editar"
-                      variant="secondary"
-                      size="sm"
-                      onPress={() => setEditing(v)}
-                    />
-                    <Button
-                      label="Excluir"
-                      variant="danger"
-                      size="sm"
-                      onPress={() => removeMut.mutate(v.id)}
-                      disabled={removeMut.isPending}
-                    />
-                  </span>
-                )}
-              </TD>
+      <TableContainer>
+        <Table>
+          <THead>
+            <TR>
+              <TH>Placa</TH>
+              <TH>Modelo</TH>
+              <TH>Km</TH>
+              <TH>Situação</TH>
+              <TH>Criado</TH>
+              <TH className="text-right">Ações</TH>
             </TR>
-          ))}
-        </TBody>
-      </Table>
+          </THead>
+          <TBody>
+            {data.items.length === 0 && (
+              <TableEmpty colSpan={6}>Nenhum veículo cadastrado ainda.</TableEmpty>
+            )}
+            {data.items.map((v) => (
+              <TR key={v.id}>
+                <TD className="font-mono font-medium">{v.plate}</TD>
+                <TD>{v.model}</TD>
+                <TD className="tabular-nums text-muted-foreground">{v.currentKm.toLocaleString("pt-BR")}</TD>
+                <TD>
+                  <StatusChip status={v.status}>{v.status}</StatusChip>
+                </TD>
+                <TD className="text-muted-foreground">{formatDate(v.createdAt)}</TD>
+                <TD className="text-right">
+                  {canWrite && (
+                    <span className="flex justify-end gap-2">
+                      <Button
+                        label="Editar"
+                        variant="secondary"
+                        size="sm"
+                        onPress={() => setEditing(v)}
+                      />
+                      <Button
+                        label="Excluir"
+                        variant="danger"
+                        size="sm"
+                        onPress={() => removeMut.mutate(v.id)}
+                        disabled={removeMut.isPending}
+                      />
+                    </span>
+                  )}
+                </TD>
+              </TR>
+            ))}
+          </TBody>
+        </Table>
+      </TableContainer>
 
       {canWrite && (
         <VehicleFormDialog

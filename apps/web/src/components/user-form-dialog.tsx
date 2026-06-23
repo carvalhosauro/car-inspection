@@ -32,7 +32,15 @@ export function UserFormDialog({
   }
 
   return (
-    <form ref={formRef} onSubmit={submit} className="grid max-w-2xl gap-3 rounded-lg border border-border p-4 md:grid-cols-2">
+    <form
+      ref={formRef}
+      onSubmit={submit}
+      className="grid max-w-2xl gap-4 rounded-lg border border-border bg-card p-6 shadow-card md:grid-cols-2"
+    >
+      <div className="md:col-span-2">
+        <h2 className="text-base font-semibold text-foreground">Novo usuário</h2>
+        <p className="text-sm text-muted-foreground">Crie uma conta de supervisor ou vistoriador.</p>
+      </div>
       <FormField id="u-name" label="Nome" value={name} onChange={(e) => setName(e.target.value)} required />
       <FormField id="u-email" label="E-mail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
       <FormField id="u-password" label="Senha" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
