@@ -162,6 +162,20 @@ export async function listInspections(
     .limit(limit + 1);
 }
 
+export async function listAssignableInspectors(tx: Tx, tenantId: string) {
+  return tx
+    .select()
+    .from(schema.users)
+    .where(
+      and(
+        eq(schema.users.tenantId, tenantId),
+        eq(schema.users.role, "vistoriador"),
+        eq(schema.users.active, true),
+      ),
+    )
+    .orderBy(asc(schema.users.name));
+}
+
 export async function listInspectorToday(tx: Tx, inspectorId: string, dayStart: Date, dayEnd: Date) {
   return tx
     .select()

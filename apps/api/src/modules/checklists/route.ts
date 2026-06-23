@@ -46,6 +46,8 @@ const createRequirementBody = z.object({
 export async function checklistRoutes(app: FastifyInstance): Promise<void> {
   const r = app.withTypeProvider<ZodTypeProvider>();
   const guard = requireRole(["gestor"]);
+  // Supervisors assign inspections, so they need to read templates to pick one.
+  const readGuard = requireRole(["gestor", "supervisor"]);
   const idParams = z.object({ id: z.string().uuid() });
 
   r.post(
@@ -57,14 +59,15 @@ export async function checklistRoutes(app: FastifyInstance): Promise<void> {
     async (request, reply) => {
       const tenantId = requireTenant(request);
       const dto = await service.createTemplate(request.tx, tenantId, request.body);
-      reply.status(201).send(dto);
+      reply.code(201);
+      return dto;
     },
   );
 
   r.get(
     "/checklist-templates",
     {
-      preHandler: guard,
+      preHandler: readGuard,
       schema: {
         querystring: paginationQuerySchema,
         response: { 200: pageSchema(checklistTemplateDto) },
@@ -75,7 +78,7 @@ export async function checklistRoutes(app: FastifyInstance): Promise<void> {
 
   r.get(
     "/checklist-templates/:id",
-    { preHandler: guard, schema: { params: idParams, response: { 200: checklistTemplateDto } } },
+    { preHandler: readGuard, schema: { params: idParams, response: { 200: checklistTemplateDto } } },
     async (request) => {
       const tenantId = requireTenant(request);
       return service.getTemplateDto(request.tx, tenantId, request.params.id);
@@ -96,7 +99,8 @@ export async function checklistRoutes(app: FastifyInstance): Promise<void> {
         request.params.id,
         request.body,
       );
-      reply.status(201).send(dto);
+      reply.code(201);
+      return dto;
     },
   );
 
@@ -126,7 +130,8 @@ export async function checklistRoutes(app: FastifyInstance): Promise<void> {
         request.params.id,
         request.body,
       );
-      reply.status(201).send(dto);
+      reply.code(201);
+      return dto;
     },
   );
 
@@ -138,7 +143,8 @@ export async function checklistRoutes(app: FastifyInstance): Promise<void> {
     },
     async (request, reply) => {
       await service.removeRequirement(request.tx, request.params.id, request.params.rid);
-      reply.status(204).send();
+      reply.code(204);
+      return null;
     },
   );
 }

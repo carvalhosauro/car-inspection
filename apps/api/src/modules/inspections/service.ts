@@ -8,6 +8,7 @@ import type {
   AuditInput,
   PaginationQuery,
   ProofKind,
+  UserDto,
 } from "@vistoria/contracts";
 import type { Tx } from "../../core/auth/types.js";
 import { errors } from "../../core/errors/app-error.js";
@@ -27,6 +28,7 @@ import {
   updateInspection,
   listInspections,
   listInspectorToday,
+  listAssignableInspectors,
   type InspectionFilter,
 } from "./repo.js";
 
@@ -221,6 +223,23 @@ export async function list(
 ): Promise<{ items: InspectionDto[]; nextCursor: string | null }> {
   const rows = await listInspections(tx, tenantId, filter, query.cursor, query.limit);
   return buildPage(rows, query.limit, (r) => toDto(r as InspectionRow));
+}
+
+export async function assignableInspectors(
+  tx: Tx,
+  tenantId: string,
+): Promise<{ items: UserDto[] }> {
+  const rows = await listAssignableInspectors(tx, tenantId);
+  const items = rows.map((row) => ({
+    id: row.id,
+    tenantId: row.tenantId,
+    name: row.name,
+    email: row.email,
+    role: row.role,
+    active: row.active,
+    createdAt: row.createdAt.toISOString(),
+  }));
+  return { items };
 }
 
 export async function myToday(
