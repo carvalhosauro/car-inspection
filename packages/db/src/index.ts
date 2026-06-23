@@ -3,10 +3,11 @@ import { sql } from "drizzle-orm";
 import { Pool } from "pg";
 import type { UserRole } from "@vistoria/contracts";
 import * as schema from "./schema";
+import { createPgPoolConfig } from "./connection.js";
 export { newId } from "./id";
 
-const DB_POOL_MAX = parseInt(process.env.DB_POOL_MAX ?? "10", 10)
-const queryClient = new Pool({ connectionString: process.env.DATABASE_URL!, max: DB_POOL_MAX });
+const DB_POOL_MAX = parseInt(process.env.DB_POOL_MAX ?? "10", 10);
+const queryClient = new Pool(createPgPoolConfig(process.env.DATABASE_URL!, DB_POOL_MAX));
 export const db = drizzle(queryClient, { schema });
 export { schema };
 export type Database = typeof db;
