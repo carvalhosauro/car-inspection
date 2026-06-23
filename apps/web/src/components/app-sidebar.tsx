@@ -1,14 +1,14 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import { Sidebar } from "@vistoria/ui/organisms/Sidebar";
+import { Sidebar, type NavLink } from "@vistoria/ui/organisms/Sidebar";
 import type { UserRole } from "@vistoria/contracts";
 import { can, type Action } from "@/lib/rbac";
 import { Button } from "@vistoria/ui/atoms/Button";
 import { setAccessToken } from "@/lib/token-store";
 
 interface NavItem {
-  id: string;
+  id: NavLink["id"];
   label: string;
   href: string;
   action: Action | null; // null = always visible

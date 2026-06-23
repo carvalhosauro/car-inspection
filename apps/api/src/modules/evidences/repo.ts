@@ -96,7 +96,7 @@ export async function updateInspectionItem(
 ) {
   const rows = await tx
     .update(schema.inspectionItems)
-    .set(data as any) // TODO: align Partial<{ status; justification }> with Drizzle's inferred insert type
+    .set(data as Partial<typeof schema.inspectionItems.$inferInsert>)
     .where(eq(schema.inspectionItems.id, id))
     .returning();
   return rows[0];

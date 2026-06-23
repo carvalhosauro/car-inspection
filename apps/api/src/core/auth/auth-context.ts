@@ -3,7 +3,7 @@ import { sql } from "drizzle-orm";
 import { db } from "@vistoria/db";
 import { verifyAccess } from "./tokens.js";
 import { errors } from "../errors/app-error.js";
-import type { Tx, PendingTx } from "./types.js";
+import type { PendingTx } from "./types.js";
 import "./types.js";
 
 interface AuthContextOptions {
