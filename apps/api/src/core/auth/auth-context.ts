@@ -3,7 +3,7 @@ import { sql } from "drizzle-orm";
 import { db } from "@vistoria/db";
 import { verifyAccess } from "./tokens.js";
 import { errors } from "../errors/app-error.js";
-import type { Tx } from "./types.js";
+import type { Tx, PendingTx } from "./types.js";
 import "./types";
 
 interface AuthContextOptions {
@@ -15,18 +15,14 @@ interface AuthContextOptions {
 // A deferred-resolution transaction: we open db.transaction, hand the tx to the
 // request, and only resolve/reject the surrounding promise from onResponse/onError
 // so the whole route handler runs inside the same RLS-scoped transaction.
-interface PendingTx {
-  tx: Tx;
-  commit: () => void;
-  rollback: (err: unknown) => void;
-  done: Promise<void>;
-}
 
 function openTx(): Promise<PendingTx> {
   return new Promise((resolveOuter, rejectOuter) => {
     let settle: { commit: () => void; rollback: (e: unknown) => void } | undefined;
     const done = db
       .transaction(async (tx) => {
+        // Deferred resolve: store the inner promise's resolve/reject so callers
+        // outside the constructor can commit or roll back the transaction later.
         await new Promise<void>((resolveInner, rejectInner) => {
           settle = { commit: resolveInner, rollback: rejectInner };
           resolveOuter({
@@ -54,7 +50,7 @@ export const authContextPlugin = fp<AuthContextOptions>(async (app, opts) => {
     if (!header || !header.startsWith("Bearer ")) {
       throw errors.unauthorized("Missing bearer token");
     }
-    let payload;
+    let payload: ReturnType<typeof verifyAccess> | undefined;
     try {
       payload = verifyAccess(header.slice("Bearer ".length), opts.accessSecret);
     } catch {
@@ -69,7 +65,7 @@ export const authContextPlugin = fp<AuthContextOptions>(async (app, opts) => {
 
     const pending = await openTx();
     request.tx = pending.tx;
-    (request as unknown as { _pendingTx: PendingTx })._pendingTx = pending;
+    request._pendingTx = pending;
 
     await pending.tx.execute(
       sql`SELECT set_config('app.tenant_id', ${request.ctx.tenantId ?? ""}, true)`,
@@ -80,21 +76,21 @@ export const authContextPlugin = fp<AuthContextOptions>(async (app, opts) => {
   });
 
   app.addHook("onError", async (request, _reply, error) => {
-    const pending = (request as unknown as { _pendingTx?: PendingTx })._pendingTx;
+    const pending = request._pendingTx;
     if (pending) {
-      (request as unknown as { _pendingTx?: PendingTx })._pendingTx = undefined;
+      request._pendingTx = undefined;
       pending.rollback(error);
       await pending.done.catch(() => undefined);
     }
   });
 
   app.addHook("onSend", async (request, reply, payload) => {
-    const pending = (request as unknown as { _pendingTx?: PendingTx })._pendingTx;
+    const pending = request._pendingTx;
     if (pending) {
       if (reply.statusCode >= 400) pending.rollback(new Error("rolled back"));
       else pending.commit();
       await pending.done.catch(() => undefined);
-      (request as unknown as { _pendingTx?: PendingTx })._pendingTx = undefined;
+      request._pendingTx = undefined;
     }
     return payload;
   });

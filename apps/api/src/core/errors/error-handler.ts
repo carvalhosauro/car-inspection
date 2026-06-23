@@ -29,13 +29,16 @@ export function errorHandler(
     return;
   }
 
-  if (error.statusCode === 401) {
-    reply.status(401).send({ code: "unauthorized", message: error.message });
+  const HTTP_UNAUTHORIZED = 401;
+  const HTTP_TOO_MANY_REQUESTS = 429;
+
+  if (error.statusCode === HTTP_UNAUTHORIZED) {
+    reply.status(HTTP_UNAUTHORIZED).send({ code: "unauthorized", message: error.message });
     return;
   }
 
-  if (error.statusCode === 429) {
-    reply.status(429).send({ code: "rate_limited", message: error.message });
+  if (error.statusCode === HTTP_TOO_MANY_REQUESTS) {
+    reply.status(HTTP_TOO_MANY_REQUESTS).send({ code: "rate_limited", message: error.message });
     return;
   }
 

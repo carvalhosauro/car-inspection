@@ -35,5 +35,6 @@ export const aiRegistry: Record<ProofKind, ProofHandler> = {
   ocr_km: ocrKmHandler,
   geo: geoHandler,
   unique_code: uniqueCodeHandler,
-  signature: geoHandler, // signature is out of MVP scope; reuse a presence check
+  // signature images contain geo data — delegate to geo handler (presence check only, out of MVP scope)
+  signature: geoHandler,
 };

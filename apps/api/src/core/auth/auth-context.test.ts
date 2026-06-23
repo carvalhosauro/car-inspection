@@ -7,6 +7,19 @@ import { errorHandler } from "../errors/error-handler.js";
 
 const SECRET = "test-access-secret";
 
+async function buildMiniWithPrefix() {
+  const app = Fastify();
+  app.setErrorHandler(errorHandler);
+  await app.register(authContextPlugin, {
+    accessSecret: SECRET,
+    publicRoutes: [],
+    publicPrefixes: ["/v1/public"],
+  });
+  app.get("/v1/public/health", async () => ({ ok: true }));
+  await app.ready();
+  return app;
+}
+
 async function buildMini() {
   const app = Fastify();
   app.setErrorHandler(errorHandler);
@@ -37,6 +50,13 @@ describe("authContext", () => {
   it("allows public routes without a token", async () => {
     const app = await buildMini();
     const res = await app.inject({ method: "GET", url: "/v1/auth/login" });
+    expect(res.statusCode).toBe(200);
+    await app.close();
+  });
+
+  it("allows requests under a public prefix without a token", async () => {
+    const app = await buildMiniWithPrefix();
+    const res = await app.inject({ method: "GET", url: "/v1/public/health" });
     expect(res.statusCode).toBe(200);
     await app.close();
   });

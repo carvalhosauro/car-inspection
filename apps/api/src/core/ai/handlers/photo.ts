@@ -1,21 +1,35 @@
 import type { ProofHandler } from "../registry.js";
 import { annotatePhoto } from "../vision.js";
 import { perceptualHash, hammingDistance } from "../phash.js";
+import { guardBytes } from "./shared.js";
 
-const SAFE_OK = new Set(["VERY_UNLIKELY", "UNLIKELY", "POSSIBLE", "UNKNOWN"]);
+// LIKELY and VERY_LIKELY are rejected as unsafe content
+const SAFE_SEARCH_ACCEPTED_LIKELIHOODS = new Set([
+  "VERY_UNLIKELY",
+  "UNLIKELY",
+  "POSSIBLE",
+  "UNKNOWN",
+])
+
 const DEFAULT_MIN_HAMMING = 8;
 const DEFAULT_MIN_SCORE = 0.6;
 
+function checkSafeSearch(safeSearch: { adult?: string; violence?: string }): boolean {
+  return (
+    SAFE_SEARCH_ACCEPTED_LIKELIHOODS.has(safeSearch.adult ?? "UNKNOWN") &&
+    SAFE_SEARCH_ACCEPTED_LIKELIHOODS.has(safeSearch.violence ?? "UNKNOWN")
+  );
+}
+
 export const photoHandler: ProofHandler = async ({ bytes, config, ctx }) => {
-  if (!bytes) {
-    return { accepted: null, validation: { reason: "pendente: sem bytes" } };
-  }
+  const bytesGuard = guardBytes(bytes)
+  if (bytesGuard) return bytesGuard
 
   let annotation;
   let dedupHash;
   try {
-    annotation = await annotatePhoto(bytes);
-    dedupHash = await perceptualHash(bytes);
+    annotation = await annotatePhoto(bytes!);
+    dedupHash = await perceptualHash(bytes!);
   } catch {
     return { accepted: null, validation: { reason: "pendente: vision indisponivel" } };
   }
@@ -31,9 +45,7 @@ export const photoHandler: ProofHandler = async ({ bytes, config, ctx }) => {
     ...annotation.objects.filter((o) => o.score >= minScore).map((o) => o.name),
   ]);
 
-  const safeOk =
-    SAFE_OK.has(annotation.safeSearch.adult ?? "UNKNOWN") &&
-    SAFE_OK.has(annotation.safeSearch.violence ?? "UNKNOWN");
+  const safeOk = checkSafeSearch(annotation.safeSearch);
 
   const labelMatch =
     expectedLabels.length === 0 || expectedLabels.some((l) => detected.has(l));

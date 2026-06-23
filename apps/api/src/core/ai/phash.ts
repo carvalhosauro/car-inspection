@@ -1,13 +1,16 @@
 import sharp from "sharp";
 import { bmvbhash } from "blockhash-core";
 
+const PHASH_RESIZE_SIZE = 256;
+const PHASH_BITS = 16;
+
 /**
  * Perceptual hash via blockhash over a normalized 256x256 RGBA bitmap.
  * Returns a hex string; compare two with hammingDistance().
  */
 export async function perceptualHash(image: Buffer): Promise<string> {
   const { data, info } = await sharp(image)
-    .resize(256, 256, { fit: "fill" })
+    .resize(PHASH_RESIZE_SIZE, PHASH_RESIZE_SIZE, { fit: "fill" })
     .ensureAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });
@@ -16,7 +19,7 @@ export async function perceptualHash(image: Buffer): Promise<string> {
     height: info.height,
     data: new Uint8ClampedArray(data),
   };
-  return bmvbhash(imageData, 16);
+  return bmvbhash(imageData, PHASH_BITS);
 }
 
 /** Bit-level Hamming distance between two equal-length hex hash strings. */

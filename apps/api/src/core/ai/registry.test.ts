@@ -10,7 +10,7 @@ const baseCtx = {
 
 describe("aiRegistry", () => {
   it("has a handler for every proof kind in the registry", () => {
-    for (const kind of ["photo", "ocr_plate", "ocr_km", "geo", "unique_code"]) {
+    for (const kind of ["photo", "ocr_plate", "ocr_km", "geo", "unique_code", "signature"]) {
       expect(typeof aiRegistry[kind as keyof typeof aiRegistry]).toBe("function");
     }
   });
@@ -26,6 +26,21 @@ describe("aiRegistry", () => {
 
   it("geo rejects when lat/lng missing", async () => {
     const out = await aiRegistry.geo({ value: {}, config: {}, ctx: baseCtx });
+    expect(out.accepted).toBe(false);
+    expect(out.validation.reason).toBeDefined();
+  });
+
+  it("signature accepts when lat/lng present", async () => {
+    const out = await aiRegistry.signature({
+      value: { lat: -3.1, lng: -60.0 },
+      config: {},
+      ctx: baseCtx,
+    });
+    expect(out.accepted).toBe(true);
+  });
+
+  it("signature rejects when lat/lng missing", async () => {
+    const out = await aiRegistry.signature({ value: {}, config: {}, ctx: baseCtx });
     expect(out.accepted).toBe(false);
     expect(out.validation.reason).toBeDefined();
   });
