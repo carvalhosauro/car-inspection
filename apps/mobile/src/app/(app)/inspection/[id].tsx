@@ -1,8 +1,16 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useApiClient } from "@/lib/api";
 import { Screen } from "@/components/Screen";
+import { Button } from "@/components/Button";
+import { StatusBadge } from "@/components/StatusBadge";
+import { colors, radius, shadow, spacing } from "@/theme";
+import {
+  INSPECTION_STATUS_LABEL,
+  INSPECTION_STATUS_TONE,
+  INSPECTION_TYPE_LABEL,
+} from "@/theme/status";
 
 export default function InspectionDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -22,7 +30,9 @@ export default function InspectionDetail() {
   if (isLoading || !inspection) {
     return (
       <Screen>
-        <ActivityIndicator />
+        <View style={styles.center}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
       </Screen>
     );
   }
@@ -31,39 +41,55 @@ export default function InspectionDetail() {
 
   return (
     <Screen>
-      <Text style={styles.title}>Vistoria {inspection.type}</Text>
-      <Text style={styles.meta}>Status: {inspection.status}</Text>
-      <Text style={styles.meta}>Veículo: {inspection.vehicleId}</Text>
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.title}>{INSPECTION_TYPE_LABEL[inspection.type]}</Text>
+          <StatusBadge
+            label={INSPECTION_STATUS_LABEL[inspection.status]}
+            tone={INSPECTION_STATUS_TONE[inspection.status]}
+          />
+        </View>
+        <View style={styles.metaRow}>
+          <Text style={styles.metaLabel}>Veículo</Text>
+          <Text style={styles.metaValue}>{inspection.vehicleId}</Text>
+        </View>
+      </View>
+
+      <View style={styles.spacer} />
 
       {started ? (
-        <Pressable
+        <Button
           testID="open-checklist"
-          style={styles.button}
+          title="Abrir checklist"
           onPress={() => router.push(`/inspection/${id}/checklist`)}
-        >
-          <Text style={styles.buttonText}>Abrir checklist</Text>
-        </Pressable>
+        />
       ) : (
-        <Pressable
+        <Button
           testID="start-inspection"
-          style={styles.button}
+          title="Iniciar vistoria"
+          loading={startMutation.isPending}
           onPress={() => startMutation.mutate()}
-          disabled={startMutation.isPending}
-        >
-          {startMutation.isPending ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Iniciar vistoria</Text>
-          )}
-        </Pressable>
+        />
       )}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  title: { fontSize: 22, fontWeight: "700" },
-  meta: { fontSize: 15, color: "#475569" },
-  button: { marginTop: 12, backgroundColor: "#1d4ed8", borderRadius: 8, padding: 14, alignItems: "center" },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+  center: { flex: 1, alignItems: "center", justifyContent: "center" },
+  card: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    gap: spacing.md,
+    ...shadow.card,
+  },
+  cardHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  title: { fontSize: 20, fontWeight: "800", color: colors.text },
+  metaRow: { gap: spacing.xs },
+  metaLabel: { fontSize: 13, color: colors.textSubtle },
+  metaValue: { fontSize: 15, color: colors.text, fontWeight: "600" },
+  spacer: { flex: 1 },
 });

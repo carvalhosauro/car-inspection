@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import type { EvidenceDto } from "@vistoria/contracts";
@@ -7,7 +7,9 @@ import { useApiClient } from "@/lib/api";
 import { signAndUpload } from "@/lib/upload";
 import { buildIdempotencyKey } from "@/lib/idempotency";
 import { Screen } from "@/components/Screen";
+import { Button } from "@/components/Button";
 import { VerdictBanner } from "@/components/VerdictBanner";
+import { colors, radius, spacing } from "@/theme";
 
 export default function PhotoScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -48,7 +50,9 @@ export default function PhotoScreen() {
   if (!permission) {
     return (
       <Screen>
-        <ActivityIndicator />
+        <View style={styles.center}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
       </Screen>
     );
   }
@@ -56,10 +60,10 @@ export default function PhotoScreen() {
   if (!permission.granted) {
     return (
       <Screen>
-        <Text>Precisamos da câmera para registrar a foto.</Text>
-        <Pressable testID="grant" style={styles.button} onPress={() => requestPermission()}>
-          <Text style={styles.buttonText}>Permitir câmera</Text>
-        </Pressable>
+        <View style={styles.center}>
+          <Text style={styles.permText}>Precisamos da câmera para registrar a foto.</Text>
+          <Button testID="grant" title="Permitir câmera" onPress={() => requestPermission()} />
+        </View>
       </Screen>
     );
   }
@@ -84,23 +88,22 @@ export default function PhotoScreen() {
         />
       ) : null}
 
+      <View style={styles.spacer} />
+
       {evidence?.accepted ? (
-        <Pressable testID="next" style={styles.button} onPress={() => router.back()}>
-          <Text style={styles.buttonText}>Próximo item</Text>
-        </Pressable>
+        <Button testID="next" title="Próximo item" onPress={() => router.back()} />
       ) : (
-        <Pressable testID="capture" style={styles.button} onPress={capture} disabled={busy}>
-          {busy ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Capturar</Text>}
-        </Pressable>
+        <Button testID="capture" title="Capturar" loading={busy} onPress={capture} />
       )}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  cameraWrap: { height: 320, borderRadius: 12, overflow: "hidden", backgroundColor: "#000" },
+  center: { flex: 1, alignItems: "center", justifyContent: "center", gap: spacing.md },
+  permText: { fontSize: 15, color: colors.text, textAlign: "center" },
+  cameraWrap: { height: 340, borderRadius: radius.lg, overflow: "hidden", backgroundColor: "#000" },
   camera: { flex: 1 },
-  error: { color: "#c0392b" },
-  button: { backgroundColor: "#1d4ed8", borderRadius: 8, padding: 14, alignItems: "center" },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+  error: { color: colors.danger, fontSize: 14 },
+  spacer: { flex: 1 },
 });

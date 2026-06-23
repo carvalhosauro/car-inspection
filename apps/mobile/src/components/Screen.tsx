@@ -1,16 +1,17 @@
 import type { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { colors, spacing } from "@/theme";
 
 export function Screen({ children }: { children: ReactNode }) {
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={["left", "right", "bottom"]}>
       <View style={styles.body}>{children}</View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#fff" },
-  body: { flex: 1, padding: 16, gap: 12 },
+  safe: { flex: 1, backgroundColor: colors.background },
+  body: { flex: 1, padding: spacing.lg, gap: spacing.md },
 });

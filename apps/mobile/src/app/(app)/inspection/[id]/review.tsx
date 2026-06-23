@@ -4,6 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import type { InspectionItemDto } from "@vistoria/contracts";
 import { useApiClient } from "@/lib/api";
 import { Screen } from "@/components/Screen";
+import { Button } from "@/components/Button";
+import { StatusBadge } from "@/components/StatusBadge";
+import { colors, radius, spacing } from "@/theme";
+import { ITEM_STATUS_LABEL, ITEM_STATUS_TONE } from "@/theme/status";
 
 export default function Review() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -18,7 +22,9 @@ export default function Review() {
   if (isLoading || !data) {
     return (
       <Screen>
-        <ActivityIndicator />
+        <View style={styles.center}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
       </Screen>
     );
   }
@@ -43,40 +49,42 @@ export default function Review() {
           return (
             <Pressable
               testID={isPending ? `pending-${item.id}` : `done-${item.id}`}
-              style={[styles.row, isPending ? styles.pendingRow : styles.doneRow]}
+              style={({ pressed }) => [styles.row, pressed && styles.pressed]}
               onPress={() => router.push(`/item/${item.id}/photo`)}
             >
               <Text style={styles.rowLabel}>{item.labelSnapshot}</Text>
-              <Text style={styles.rowStatus}>{item.status}</Text>
+              <StatusBadge label={ITEM_STATUS_LABEL[item.status]} tone={ITEM_STATUS_TONE[item.status]} />
             </Pressable>
           );
         }}
-        ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+        ItemSeparatorComponent={() => <View style={{ height: spacing.sm }} />}
       />
 
-      <Pressable
+      <Button
         testID="finish-button"
-        style={[styles.button, !canFinish && styles.buttonDisabled]}
+        title={canFinish ? "Concluir vistoria" : "Resolva os pendentes"}
+        variant="success"
         disabled={!canFinish}
         onPress={() => router.push(`/inspection/${id}/finish`)}
-      >
-        <Text style={styles.buttonText}>
-          {canFinish ? "Concluir vistoria" : "Resolva os pendentes"}
-        </Text>
-      </Pressable>
+      />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  title: { fontSize: 20, fontWeight: "700" },
-  summary: { fontSize: 14, color: "#475569" },
-  row: { flexDirection: "row", justifyContent: "space-between", borderRadius: 8, padding: 12 },
-  pendingRow: { backgroundColor: "#fef3c7" },
-  doneRow: { backgroundColor: "#f1f5f9" },
-  rowLabel: { fontSize: 15 },
-  rowStatus: { fontSize: 13, color: "#475569" },
-  button: { backgroundColor: "#16a34a", borderRadius: 8, padding: 14, alignItems: "center" },
-  buttonDisabled: { backgroundColor: "#94a3b8" },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+  center: { flex: 1, alignItems: "center", justifyContent: "center" },
+  title: { fontSize: 22, fontWeight: "800", color: colors.text },
+  summary: { fontSize: 14, color: colors.textMuted },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    padding: spacing.lg,
+  },
+  pressed: { opacity: 0.9 },
+  rowLabel: { fontSize: 15, color: colors.text, fontWeight: "600", flexShrink: 1 },
 });

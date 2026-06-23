@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, TextInput, View } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import type { EvidenceDto, ProofKind } from "@vistoria/contracts";
@@ -7,6 +7,8 @@ import { useApiClient } from "@/lib/api";
 import { signAndUpload } from "@/lib/upload";
 import { buildIdempotencyKey } from "@/lib/idempotency";
 import { Screen } from "@/components/Screen";
+import { Button } from "@/components/Button";
+import { colors, radius, spacing } from "@/theme";
 
 // The ocr param picks which field we read. Defaults to plate.
 function ocrKindFrom(kind: string | undefined): "ocr_plate" | "ocr_km" {
@@ -82,17 +84,19 @@ export default function OcrScreen() {
   if (!permission) {
     return (
       <Screen>
-        <ActivityIndicator />
+        <View style={styles.center}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
       </Screen>
     );
   }
   if (!permission.granted) {
     return (
       <Screen>
-        <Text>Precisamos da câmera para a leitura.</Text>
-        <Pressable testID="grant" style={styles.button} onPress={() => requestPermission()}>
-          <Text style={styles.buttonText}>Permitir câmera</Text>
-        </Pressable>
+        <View style={styles.center}>
+          <Text style={styles.permText}>Precisamos da câmera para a leitura.</Text>
+          <Button testID="grant" title="Permitir câmera" onPress={() => requestPermission()} />
+        </View>
       </Screen>
     );
   }
@@ -114,30 +118,36 @@ export default function OcrScreen() {
         autoCapitalize="characters"
         keyboardType={field === "km" ? "number-pad" : "default"}
         placeholder="Capture para preencher"
+        placeholderTextColor={colors.textSubtle}
       />
 
-      <Pressable testID="capture" style={styles.button} onPress={capture} disabled={busy}>
-        {busy ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Capturar e ler</Text>}
-      </Pressable>
-      <Pressable
+      <Button testID="capture" title="Capturar e ler" loading={busy} onPress={capture} />
+      <Button
         testID="confirm"
-        style={[styles.button, styles.confirm]}
-        onPress={confirm}
+        title="Confirmar valor"
+        variant="success"
         disabled={busy || text.length === 0 || confirmed}
-      >
-        <Text style={styles.buttonText}>Confirmar valor</Text>
-      </Pressable>
+        onPress={confirm}
+      />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  cameraWrap: { height: 260, borderRadius: 12, overflow: "hidden", backgroundColor: "#000" },
+  center: { flex: 1, alignItems: "center", justifyContent: "center", gap: spacing.md },
+  permText: { fontSize: 15, color: colors.text, textAlign: "center" },
+  cameraWrap: { height: 280, borderRadius: radius.lg, overflow: "hidden", backgroundColor: "#000" },
   camera: { flex: 1 },
-  label: { fontSize: 14, color: "#475569" },
-  input: { borderWidth: 1, borderColor: "#ccc", borderRadius: 8, padding: 12, fontSize: 18 },
-  error: { color: "#c0392b" },
-  button: { backgroundColor: "#1d4ed8", borderRadius: 8, padding: 14, alignItems: "center" },
-  confirm: { backgroundColor: "#16a34a" },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+  label: { fontSize: 13, color: colors.textMuted, fontWeight: "600" },
+  input: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    fontSize: 18,
+    color: colors.text,
+    backgroundColor: colors.surface,
+  },
+  error: { color: colors.danger, fontSize: 14 },
 });
