@@ -3,7 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { CreateInspectionInput, InspectionDto, UserRole } from "@vistoria/contracts";
+import type {
+  CreateInspectionInput,
+  InspectionDto,
+  UserRole,
+  VehicleDto,
+  ChecklistTemplateDto,
+  UserDto,
+} from "@vistoria/contracts";
 import { browserApi } from "@/lib/api-browser";
 import { can } from "@/lib/rbac";
 import { formatDate, formatInspectionStatus, formatInspectionType } from "@/lib/format";
@@ -14,7 +21,19 @@ import { Table, THead, TBody, TR, TH, TD, TableContainer, TableEmpty } from "@/c
 import { StatusChip } from "@/components/ui/status-chip";
 import { PageHeader } from "@/components/ui/page-header";
 
-export function InspectionsList({ initial, role }: { initial: InspectionDto[]; role: UserRole }) {
+export function InspectionsList({
+  initial,
+  role,
+  vehicles = [],
+  templates = [],
+  inspectors = [],
+}: {
+  initial: InspectionDto[];
+  role: UserRole;
+  vehicles?: VehicleDto[];
+  templates?: ChecklistTemplateDto[];
+  inspectors?: UserDto[];
+}) {
   const api = browserApi();
   const qc = useQueryClient();
   const canAssign = can(role, "assignInspections");
@@ -27,17 +46,8 @@ export function InspectionsList({ initial, role }: { initial: InspectionDto[]; r
     placeholderData: { items: initial, nextCursor: null },
   });
 
-  const vehiclesQ = useQuery({
-    queryKey: ["vehicles", "lookup"],
-    queryFn: () => api.base.vehicles.list(),
-  });
-  const inspectorsQ = useQuery({
-    queryKey: ["inspectors", "lookup"],
-    queryFn: () => api.inspectors.list(),
-  });
-
-  const vehicleMap = new Map((vehiclesQ.data?.items ?? []).map((v) => [v.id, v]));
-  const inspectorMap = new Map((inspectorsQ.data?.items ?? []).map((u) => [u.id, u]));
+  const vehicleMap = new Map(vehicles.map((v) => [v.id, v]));
+  const inspectorMap = new Map(inspectors.map((u) => [u.id, u]));
 
   const createMut = useMutation({
     mutationFn: (input: CreateInspectionInput) => api.base.inspections.create(input),
@@ -134,6 +144,9 @@ export function InspectionsList({ initial, role }: { initial: InspectionDto[]; r
           onSubmit={(input) => createMut.mutate(input)}
           pending={createMut.isPending}
           error={createMut.isError ? "Não foi possível criar a vistoria. Tente novamente." : null}
+          vehicles={vehicles}
+          templates={templates}
+          inspectors={inspectors}
         />
       )}
     </div>
