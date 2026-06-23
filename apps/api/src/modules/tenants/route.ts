@@ -21,7 +21,8 @@ export async function tenantRoutes(app: FastifyInstance): Promise<void> {
     },
     async (request, reply) => {
       const dto = await service.createTenant(request.tx, request.body);
-      reply.status(201).send(dto);
+      reply.code(201);
+      return dto;
     },
   );
 

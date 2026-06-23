@@ -26,7 +26,8 @@ export async function uploadRoutes(app: FastifyInstance): Promise<void> {
     async (request, reply) => {
       const tenantId = requireTenant(request);
       const out = await service.sign(tenantId, request.body.contentType);
-      reply.status(201).send(out);
+      reply.code(201);
+      return out;
     },
   );
 }

@@ -51,7 +51,8 @@ export async function evidenceRoutes(app: FastifyInstance): Promise<void> {
         request.params.id,
         request.body,
       );
-      reply.status(201).send(dto);
+      reply.code(201);
+      return dto;
     },
   );
 
@@ -69,7 +70,8 @@ export async function evidenceRoutes(app: FastifyInstance): Promise<void> {
         request.params.id,
         request.body,
       );
-      reply.status(201).send(dto);
+      reply.code(201);
+      return dto;
     },
   );
 }

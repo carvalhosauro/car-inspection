@@ -23,7 +23,8 @@ export async function vehicleRoutes(app: FastifyInstance): Promise<void> {
     async (request, reply) => {
       const tenantId = requireTenant(request);
       const dto = await service.create(request.tx, tenantId, request.body);
-      reply.status(201).send(dto);
+      reply.code(201);
+      return dto;
     },
   );
 
@@ -66,7 +67,8 @@ export async function vehicleRoutes(app: FastifyInstance): Promise<void> {
     async (request, reply) => {
       const tenantId = requireTenant(request);
       await service.softDelete(request.tx, request.params.id, tenantId);
-      reply.status(204).send();
+      reply.code(204);
+      return null;
     },
   );
 }

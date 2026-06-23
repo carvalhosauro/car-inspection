@@ -25,7 +25,8 @@ export async function userRoutes(app: FastifyInstance): Promise<void> {
     async (request, reply) => {
       const tenantId = requireTenant(request);
       const dto = await service.create(request.tx, tenantId, request.body);
-      reply.status(201).send(dto);
+      reply.code(201);
+      return dto;
     },
   );
 
@@ -52,7 +53,8 @@ export async function userRoutes(app: FastifyInstance): Promise<void> {
     { preHandler: requireRole(["gestor"]), schema: { params: idParams } },
     async (request, reply) => {
       await service.softDelete(request.tx, requireTenant(request), request.params.id);
-      reply.status(204).send();
+      reply.code(204);
+      return null;
     },
   );
 }
