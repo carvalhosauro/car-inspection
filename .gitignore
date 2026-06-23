@@ -12,3 +12,13 @@ dist/
 coverage/
 storybook-static/
 *.tsbuildinfo
+
+# Android signing — NUNCA commitar
+*.keystore
+*.jks
+credentials.json
+
+# Expo local cache e nativos gerados (prebuild)
+.expo/
+apps/*/android/
+apps/*/ios/

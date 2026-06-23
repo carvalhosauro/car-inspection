@@ -7,17 +7,44 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "ios": { "supportsTablet": false, "bundleIdentifier": "dev.vistoria.mobile" },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "dev.vistoria.mobile"
+    },
     "android": {
       "package": "dev.vistoria.mobile",
-      "versionCode": 1
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "plugins": [
       "expo-router",
       "expo-secure-store",
-      ["expo-camera", { "cameraPermission": "Permitir acesso à câmera para registrar fotos da vistoria." }],
-      ["expo-location", { "locationWhenInUsePermission": "Permitir acesso à localização para concluir a vistoria." }]
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permitir acesso à câmera para registrar fotos da vistoria."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Permitir acesso à localização para concluir a vistoria."
+        }
+      ]
     ],
-    "experiments": { "typedRoutes": false }
+    "experiments": {
+      "typedRoutes": false
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ee363851-eefb-40f2-b9c3-3220e64f8f19"
+      }
+    }
   }
 }
