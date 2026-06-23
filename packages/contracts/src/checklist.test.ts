@@ -39,7 +39,7 @@ describe("createChecklistItemInput", () => {
       requirements: [{ kind: "photo" }],
     });
     expect(parsed.requirements).toHaveLength(1);
-    expect(parsed.requirements[0].kind).toBe("photo");
+    expect(parsed.requirements[0]!.kind).toBe("photo");
   });
 
   it("rejects empty label", () => {
@@ -69,7 +69,7 @@ describe("createChecklistTemplateInput", () => {
       ],
     });
     expect(parsed.items).toHaveLength(1);
-    expect(parsed.items[0].label).toBe("Exterior");
+    expect(parsed.items[0]!.label).toBe("Exterior");
   });
 
   it("rejects empty name", () => {
