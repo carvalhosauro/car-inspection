@@ -32,7 +32,7 @@ const INSPECTION: InspectionDto = {
 function renderList() {
   return render(
     <QueryClientProvider client={makeQueryClient()}>
-      <InspectionsList initial={[INSPECTION]} />
+      <InspectionsList initial={[INSPECTION]} role="gestor" />
     </QueryClientProvider>,
   );
 }

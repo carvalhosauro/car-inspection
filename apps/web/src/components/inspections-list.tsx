@@ -2,23 +2,37 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
-import type { InspectionDto } from "@vistoria/contracts";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { CreateInspectionInput, InspectionDto, UserRole } from "@vistoria/contracts";
 import { browserApi } from "@/lib/api-browser";
-import { formatDate, formatInspectionStatus } from "@/lib/format";
+import { can } from "@/lib/rbac";
+import { formatDate, formatInspectionStatus, formatInspectionType } from "@/lib/format";
+import { Button } from "@vistoria/ui/atoms/Button";
 import { InspectionFilters, type FiltersState } from "@/components/inspection-filters";
+import { InspectionFormDialog } from "@/components/inspection-form-dialog";
 import { Table, THead, TBody, TR, TH, TD, TableContainer, TableEmpty } from "@/components/ui/table";
 import { StatusChip } from "@/components/ui/status-chip";
 import { PageHeader } from "@/components/ui/page-header";
 
-export function InspectionsList({ initial }: { initial: InspectionDto[] }) {
+export function InspectionsList({ initial, role }: { initial: InspectionDto[]; role: UserRole }) {
   const api = browserApi();
+  const qc = useQueryClient();
+  const canAssign = can(role, "assignInspections");
   const [filters, setFilters] = useState<FiltersState>({});
+  const [creating, setCreating] = useState(false);
 
   const { data } = useQuery({
     queryKey: ["inspections", filters],
     queryFn: () => api.inspections.list(filters),
     placeholderData: { items: initial, nextCursor: null },
+  });
+
+  const createMut = useMutation({
+    mutationFn: (input: CreateInspectionInput) => api.base.inspections.create(input),
+    onSuccess: () => {
+      setCreating(false);
+      qc.invalidateQueries({ queryKey: ["inspections"] });
+    },
   });
 
   const items = data?.items ?? initial;
@@ -28,6 +42,17 @@ export function InspectionsList({ initial }: { initial: InspectionDto[] }) {
       <PageHeader
         title="Vistorias"
         description="Acompanhe todas as vistorias e seus respectivos status."
+        actions={
+          canAssign && (
+            <Button
+              label="Nova vistoria"
+              onPress={() => {
+                createMut.reset();
+                setCreating(true);
+              }}
+            />
+          )
+        }
       />
       <div className="rounded-lg border border-border bg-card p-4 shadow-card">
         <InspectionFilters value={filters} onChange={setFilters} />
@@ -50,7 +75,7 @@ export function InspectionsList({ initial }: { initial: InspectionDto[] }) {
             )}
             {items.map((i) => (
               <TR key={i.id}>
-                <TD className="capitalize">{i.type}</TD>
+                <TD>{formatInspectionType(i.type)}</TD>
                 <TD>
                   <StatusChip status={i.status}>{formatInspectionStatus(i.status)}</StatusChip>
                 </TD>
@@ -70,6 +95,16 @@ export function InspectionsList({ initial }: { initial: InspectionDto[] }) {
           </TBody>
         </Table>
       </TableContainer>
+
+      {canAssign && (
+        <InspectionFormDialog
+          open={creating}
+          onClose={() => setCreating(false)}
+          onSubmit={(input) => createMut.mutate(input)}
+          pending={createMut.isPending}
+          error={createMut.isError ? "Não foi possível criar a vistoria. Tente novamente." : null}
+        />
+      )}
     </div>
   );
 }
