@@ -27,8 +27,13 @@ const PUBLIC_ROUTES = ["/health", "/v1/auth/login", "/v1/auth/refresh"];
 const GLOBAL_RATE_LIMIT_MAX = 10;
 const GLOBAL_RATE_LIMIT_WINDOW = "1 minute";
 
+function createLoggerConfig(): false | { level: string } {
+  if (process.env.NODE_ENV === "test") return false;
+  return { level: process.env.LOG_LEVEL ?? "info" };
+}
+
 export async function buildApp(): Promise<FastifyInstance> {
-  const app = Fastify({ logger: false }).withTypeProvider<ZodTypeProvider>();
+  const app = Fastify({ logger: createLoggerConfig() }).withTypeProvider<ZodTypeProvider>();
 
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
