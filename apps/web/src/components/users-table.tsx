@@ -1,6 +1,7 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { UserDto, CreateUserInput } from "@vistoria/contracts";
 import { browserApi } from "@/lib/api-browser";
 import { useInvalidateOnSuccess } from "@/lib/mutation-utils";
@@ -13,6 +14,8 @@ import { UserFormDialog } from "@/components/user-form-dialog";
 
 export function UsersTable({ initial }: { initial: UserDto[] }) {
   const api = browserApi();
+  const qc = useQueryClient();
+  const [creating, setCreating] = useState(false);
 
   const { data } = useQuery({
     queryKey: ["users"],
@@ -22,7 +25,10 @@ export function UsersTable({ initial }: { initial: UserDto[] }) {
 
   const createMut = useMutation({
     mutationFn: (input: CreateUserInput) => api.users.create(input),
-    ...useInvalidateOnSuccess(["users"]),
+    onSuccess: () => {
+      setCreating(false);
+      qc.invalidateQueries({ queryKey: ["users"] });
+    },
   });
 
   const removeMut = useMutation({
@@ -35,8 +41,14 @@ export function UsersTable({ initial }: { initial: UserDto[] }) {
       <PageHeader
         title="Usuários"
         description="Gerencie as contas de supervisores e vistoriadores da locadora."
+        actions={<Button label="Adicionar" onPress={() => setCreating(true)} />}
       />
-      <UserFormDialog onSubmit={(input) => createMut.mutate(input)} pending={createMut.isPending} />
+      <UserFormDialog
+        open={creating}
+        onClose={() => setCreating(false)}
+        onSubmit={(input) => createMut.mutate(input)}
+        pending={createMut.isPending}
+      />
       <TableContainer>
         <Table>
           <THead>

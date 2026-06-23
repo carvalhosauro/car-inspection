@@ -22,7 +22,7 @@ interface DraftItem {
   requirements: DraftRequirement[];
 }
 
-export function TemplateEditor() {
+export function TemplateEditor({ onCreated }: { onCreated?: () => void } = {}) {
   const api = browserApi();
   const qc = useQueryClient();
 
@@ -43,6 +43,7 @@ export function TemplateEditor() {
       setName("");
       setItems([]);
       qc.invalidateQueries({ queryKey: ["templates"] });
+      onCreated?.();
     },
   });
 
@@ -80,7 +81,7 @@ export function TemplateEditor() {
   }
 
   return (
-    <div className="space-y-6 rounded-lg border border-border bg-card p-6 shadow-card">
+    <div className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="tpl-name">Nome do template</Label>
         <HtmlInput id="tpl-name" value={name} onChange={(e) => setName(e.target.value)} />
