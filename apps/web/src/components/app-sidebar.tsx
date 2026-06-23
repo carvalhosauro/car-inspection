@@ -8,7 +8,6 @@ import {
   ClipboardList,
   Car,
   Search,
-  BarChart3,
   Users,
   LogOut,
   ShieldCheck,
@@ -34,7 +33,6 @@ const NAV: NavItem[] = [
   { label: "Checklists", href: "/checklists", icon: ClipboardList, action: "crudTemplates" },
   { label: "Vistorias", href: "/inspections", icon: Car, action: "assignInspections" },
   { label: "Auditoria", href: "/audit", icon: Search, action: "auditInspections" },
-  { label: "Relatórios", href: "/reports", icon: BarChart3, action: "viewReports" },
   { label: "Usuários", href: "/users", icon: Users, action: "manageUsers" },
 ];
 

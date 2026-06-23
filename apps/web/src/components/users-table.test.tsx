@@ -32,8 +32,9 @@ function renderTable() {
 describe("UsersTable", () => {
   beforeEach(() => createMock.mockReset().mockResolvedValue({ ...USER, id: "u2" }));
 
-  it("only offers supervisor and vistoriador roles", () => {
+  it("only offers supervisor and vistoriador roles", async () => {
     renderTable();
+    await userEvent.click(screen.getByRole("button", { name: /adicionar/i }));
     const select = screen.getByLabelText(/papel/i) as HTMLSelectElement;
     const values = Array.from(select.options).map((o) => o.value);
     expect(values).toEqual(["supervisor", "vistoriador"]);
@@ -41,6 +42,7 @@ describe("UsersTable", () => {
 
   it("creates a user through the api-client", async () => {
     renderTable();
+    await userEvent.click(screen.getByRole("button", { name: /adicionar/i }));
     await userEvent.type(screen.getByLabelText(/nome/i), "Novo Vistoriador");
     await userEvent.type(screen.getByLabelText(/e-mail/i), "novo@demo.dev");
     await userEvent.type(screen.getByLabelText(/senha/i), "senha123");
