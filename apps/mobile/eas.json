@@ -14,6 +14,14 @@
         "EXPO_PUBLIC_API_URL": "https://vistoriaapi-production.up.railway.app"
       }
     },
+    "preview-local": {
+      "extends": "preview",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://vistoriaapi-production.up.railway.app",
+        "ORG_GRADLE_PROJECT_reactNativeArchitectures": "arm64-v8a",
+        "GRADLE_OPTS": "-Dorg.gradle.workers.max=2 -Dorg.gradle.parallel=false -Dorg.gradle.jvmargs=-Xmx4g"
+      }
+    },
     "production": {
       "credentialsSource": "local",
       "android": {
