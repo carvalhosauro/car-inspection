@@ -33,7 +33,14 @@ export async function POST(request: Request): Promise<Response> {
   try {
     tokens = await api.base.auth.login(parsed.data);
   } catch (err) {
+    const isConnErr = err instanceof TypeError && (err as TypeError).message.includes("fetch");
     console.error("[session] login failed:", { email, error: err });
+    if (isConnErr) {
+      return NextResponse.json(
+        { code: "api_unavailable", message: "Serviço indisponível. Tente novamente." },
+        { status: 503 },
+      );
+    }
     return NextResponse.json(
       { code: "invalid_credentials", message: "Credenciais inválidas" },
       { status: 401 },
