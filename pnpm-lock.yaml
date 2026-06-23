@@ -15,6 +15,13 @@ packageExtensionsChecksum: sha256-XRNpVtgt+ULQa9nMZZH6g2jWQfA/ykomc0s9HaKNkwM=
 importers:
 
   .:
+    dependencies:
+      react:
+        specifier: 19.2.7
+        version: 19.2.7
+      react-dom:
+        specifier: 19.2.7
+        version: 19.2.7(react@19.2.7)
     devDependencies:
       turbo:
         specifier: ^2.1.0

@@ -11,6 +11,10 @@
     "typecheck": "turbo run typecheck",
     "build:mobile:apk": "pnpm --filter @vistoria/mobile build:apk"
   },
+  "dependencies": {
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
   "devDependencies": {
     "turbo": "^2.1.0",
     "typescript": "^5.6.0"
