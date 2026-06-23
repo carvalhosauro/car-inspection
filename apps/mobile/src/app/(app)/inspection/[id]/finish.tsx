@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import * as Location from "expo-location";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useApiClient } from "@/lib/api";
 import { Screen } from "@/components/Screen";
+import { Button } from "@/components/Button";
+import { colors, radius, shadow, spacing } from "@/theme";
 
 export default function Finish() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -38,40 +40,75 @@ export default function Finish() {
   if (code) {
     return (
       <Screen>
-        <Text style={styles.title}>Vistoria concluída</Text>
-        <Text style={styles.codeLabel}>Código único:</Text>
-        <Text testID="unique-code" style={styles.code}>
-          {code}
-        </Text>
-        <Pressable testID="done" style={styles.button} onPress={() => router.replace("/")}>
-          <Text style={styles.buttonText}>Voltar ao início</Text>
-        </Pressable>
+        <View style={styles.successCard}>
+          <View style={styles.check}>
+            <Text style={styles.checkMark}>✓</Text>
+          </View>
+          <Text style={styles.title}>Vistoria concluída</Text>
+          <Text style={styles.codeLabel}>Código único</Text>
+          <Text testID="unique-code" style={styles.code}>
+            {code}
+          </Text>
+        </View>
+        <View style={styles.spacer} />
+        <Button testID="done" title="Voltar ao início" onPress={() => router.replace("/")} />
       </Screen>
     );
   }
 
   return (
     <Screen>
-      <Text style={styles.title}>Concluir vistoria</Text>
-      <Text style={styles.meta}>Vamos registrar sua localização ao concluir.</Text>
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-      <Pressable testID="finish-now" style={styles.button} onPress={finishNow} disabled={busy}>
-        {busy ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Capturar geo e concluir</Text>
-        )}
-      </Pressable>
+      <View style={styles.card}>
+        <Text style={styles.title}>Concluir vistoria</Text>
+        <Text style={styles.meta}>Vamos registrar sua localização ao concluir a vistoria.</Text>
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+      </View>
+      <View style={styles.spacer} />
+      <Button
+        testID="finish-now"
+        title="Capturar geo e concluir"
+        variant="success"
+        loading={busy}
+        onPress={finishNow}
+      />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  title: { fontSize: 22, fontWeight: "700" },
-  meta: { fontSize: 15, color: "#475569" },
-  codeLabel: { fontSize: 14, color: "#475569", marginTop: 8 },
-  code: { fontSize: 24, fontWeight: "800", color: "#16a34a", letterSpacing: 1 },
-  error: { color: "#c0392b" },
-  button: { backgroundColor: "#16a34a", borderRadius: 8, padding: 14, alignItems: "center" },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+  card: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    gap: spacing.sm,
+    ...shadow.card,
+  },
+  successCard: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    padding: spacing.xl,
+    alignItems: "center",
+    gap: spacing.xs,
+    ...shadow.card,
+  },
+  check: {
+    width: 64,
+    height: 64,
+    borderRadius: radius.pill,
+    backgroundColor: colors.successBg,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: spacing.sm,
+  },
+  checkMark: { color: colors.success, fontSize: 34, fontWeight: "800" },
+  title: { fontSize: 22, fontWeight: "800", color: colors.text },
+  meta: { fontSize: 15, color: colors.textMuted },
+  codeLabel: { fontSize: 13, color: colors.textSubtle, marginTop: spacing.sm },
+  code: { fontSize: 26, fontWeight: "800", color: colors.success, letterSpacing: 1 },
+  error: { color: colors.danger, fontSize: 14 },
+  spacer: { flex: 1 },
 });

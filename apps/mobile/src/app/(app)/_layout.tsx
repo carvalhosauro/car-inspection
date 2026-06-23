@@ -1,6 +1,25 @@
 import { useEffect } from "react";
 import { Stack, useRouter } from "expo-router";
+import { Pressable, StyleSheet, Text } from "react-native";
 import { useAuth } from "@/auth/auth-context";
+import { colors, spacing } from "@/theme";
+
+function LogoutButton() {
+  const { logout } = useAuth();
+  const router = useRouter();
+  return (
+    <Pressable
+      testID="logout"
+      onPress={async () => {
+        await logout();
+        router.replace("/login");
+      }}
+      style={({ pressed }) => [styles.logout, pressed && styles.pressed]}
+    >
+      <Text style={styles.logoutText}>Sair</Text>
+    </Pressable>
+  );
+}
 
 export default function AppLayout() {
   const { isAuthenticated, bootstrapped } = useAuth();
@@ -13,8 +32,19 @@ export default function AppLayout() {
   }, [isAuthenticated, bootstrapped, router]);
 
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ title: "Vistorias do dia" }} />
+    <Stack
+      screenOptions={{
+        headerStyle: { backgroundColor: colors.surface },
+        headerTitleStyle: { color: colors.text, fontWeight: "700" },
+        headerTintColor: colors.primary,
+        headerShadowVisible: false,
+        contentStyle: { backgroundColor: colors.background },
+      }}
+    >
+      <Stack.Screen
+        name="index"
+        options={{ title: "Vistorias do dia", headerRight: () => <LogoutButton /> }}
+      />
       <Stack.Screen name="history" options={{ title: "Histórico" }} />
       <Stack.Screen name="inspection/[id]" options={{ title: "Vistoria" }} />
       <Stack.Screen name="inspection/[id]/checklist" options={{ title: "Checklist" }} />
@@ -26,3 +56,9 @@ export default function AppLayout() {
     </Stack>
   );
 }
+
+const styles = StyleSheet.create({
+  logout: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
+  pressed: { opacity: 0.6 },
+  logoutText: { color: colors.primary, fontSize: 15, fontWeight: "600" },
+});

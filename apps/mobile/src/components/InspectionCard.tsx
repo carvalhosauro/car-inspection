@@ -1,19 +1,12 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { InspectionDto } from "@vistoria/contracts";
-
-const STATUS_LABEL: Record<InspectionDto["status"], string> = {
-  atribuida: "Atribuída",
-  em_andamento: "Em andamento",
-  concluida: "Concluída",
-  aprovada: "Aprovada",
-  reprovada: "Reprovada",
-};
-
-const TYPE_LABEL: Record<InspectionDto["type"], string> = {
-  retirada: "Retirada",
-  devolucao: "Devolução",
-  periodica: "Periódica",
-};
+import { colors, radius, shadow, spacing } from "@/theme";
+import {
+  INSPECTION_STATUS_LABEL,
+  INSPECTION_STATUS_TONE,
+  INSPECTION_TYPE_LABEL,
+} from "@/theme/status";
+import { StatusBadge } from "@/components/StatusBadge";
 
 export function InspectionCard({
   inspection,
@@ -23,24 +16,53 @@ export function InspectionCard({
   onPress: () => void;
 }) {
   return (
-    <Pressable testID={`inspection-card-${inspection.id}`} style={styles.card} onPress={onPress}>
+    <Pressable
+      testID={`inspection-card-${inspection.id}`}
+      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+      onPress={onPress}
+    >
       <View style={styles.row}>
-        <Text style={styles.type}>{TYPE_LABEL[inspection.type]}</Text>
-        <Text style={styles.status}>{STATUS_LABEL[inspection.status]}</Text>
+        <Text style={styles.type}>{INSPECTION_TYPE_LABEL[inspection.type]}</Text>
+        <StatusBadge
+          label={INSPECTION_STATUS_LABEL[inspection.status]}
+          tone={INSPECTION_STATUS_TONE[inspection.status]}
+        />
       </View>
-      <Text style={styles.meta}>Veículo: {inspection.vehicleId.slice(0, 8)}</Text>
+      <View style={styles.metaRow}>
+        <Text style={styles.metaLabel}>Veículo</Text>
+        <Text style={styles.metaValue}>{inspection.vehicleId.slice(0, 8)}</Text>
+      </View>
       {inspection.uniqueCode ? (
-        <Text style={styles.code}>Código: {inspection.uniqueCode}</Text>
+        <View style={styles.codePill}>
+          <Text style={styles.code}>Código: {inspection.uniqueCode}</Text>
+        </View>
       ) : null}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { borderWidth: 1, borderColor: "#e2e8f0", borderRadius: 10, padding: 14, gap: 4 },
-  row: { flexDirection: "row", justifyContent: "space-between" },
-  type: { fontSize: 16, fontWeight: "700" },
-  status: { fontSize: 13, color: "#475569" },
-  meta: { fontSize: 13, color: "#64748b" },
-  code: { fontSize: 13, color: "#16a34a", fontWeight: "600" },
+  card: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    gap: spacing.sm,
+    ...shadow.card,
+  },
+  pressed: { opacity: 0.9 },
+  row: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  type: { fontSize: 17, fontWeight: "700", color: colors.text },
+  metaRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
+  metaLabel: { fontSize: 13, color: colors.textSubtle },
+  metaValue: { fontSize: 13, color: colors.textMuted, fontWeight: "600" },
+  codePill: {
+    alignSelf: "flex-start",
+    backgroundColor: colors.successBg,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+  },
+  code: { fontSize: 12, color: colors.successText, fontWeight: "700" },
 });
