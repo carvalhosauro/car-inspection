@@ -142,7 +142,7 @@ export async function inspectionRoutes(app: FastifyInstance): Promise<void> {
       },
     },
     async (request) => {
-      const tenantId = requireTenant(request);
+      requireTenant(request);
       return service.myToday(request.tx, request.ctx.userId);
     },
   );
