@@ -8,7 +8,10 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": { "supportsTablet": false, "bundleIdentifier": "dev.vistoria.mobile" },
-    "android": { "package": "dev.vistoria.mobile" },
+    "android": {
+      "package": "dev.vistoria.mobile",
+      "versionCode": 1
+    },
     "plugins": [
       "expo-router",
       "expo-secure-store",

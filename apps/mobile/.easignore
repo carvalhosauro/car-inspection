@@ -1,0 +1,8 @@
+# Other apps and docs are not needed for the mobile build.
+apps/api/
+apps/web/
+docs/
+
+# Tests
+**/*.test.ts
+**/*.test.tsx
