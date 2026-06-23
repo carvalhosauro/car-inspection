@@ -9,7 +9,6 @@ const SECTION_TITLES: Record<string, string> = {
   checklists: "Checklists",
   inspections: "Vistorias",
   audit: "Auditoria",
-  reports: "Relatórios",
   users: "Usuários",
 };
 

@@ -159,9 +159,33 @@ export function createWebApi(baseUrl: string, getToken: TokenGetter): WebApi {
     },
     reports: {
       summary: () => c<ReportsSummary>("GET", "/v1/reports/summary"),
-      damagesByVehicle: () => c<DamagesByVehicle[]>("GET", "/v1/reports/damages-by-vehicle"),
-      pendingByInspector: () => c<PendingByInspector[]>("GET", "/v1/reports/pending-by-inspector"),
-      avgInspectionTime: () => c<AvgInspectionTime[]>("GET", "/v1/reports/avg-inspection-time"),
+      damagesByVehicle: async () => {
+        const res = await c<{ items: { vehicleId: string; damageCount: number }[] }>(
+          "GET",
+          "/v1/reports/damages-by-vehicle",
+        );
+        return (res.items ?? []).map((i) => ({
+          vehicleId: i.vehicleId,
+          plate: i.vehicleId.slice(0, 8),
+          damages: i.damageCount,
+        }));
+      },
+      pendingByInspector: async () => {
+        const res = await c<{ items: { inspectorId: string; pendingCount: number }[] }>(
+          "GET",
+          "/v1/reports/pending-by-inspector",
+        );
+        return (res.items ?? []).map((i) => ({
+          inspectorId: i.inspectorId,
+          name: i.inspectorId.slice(0, 8),
+          pending: i.pendingCount,
+        }));
+      },
+      avgInspectionTime: async () => {
+        const res = await c<{ avgSeconds: number | null }>("GET", "/v1/reports/avg-inspection-time");
+        if (res.avgSeconds === null || res.avgSeconds === undefined) return [];
+        return [{ type: "Média geral", avgMinutes: Math.round(res.avgSeconds / 60) }];
+      },
     },
   };
 }
