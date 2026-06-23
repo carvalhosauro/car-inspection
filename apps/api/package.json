@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "main": "./src/server.ts",
+
   "scripts": {
     "dev": "tsx watch --env-file=.env src/server.ts",
     "build": "tsc",
