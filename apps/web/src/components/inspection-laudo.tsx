@@ -2,16 +2,17 @@ import type { InspectionItemDto, EvidenceDto } from "@vistoria/contracts";
 import type { LaudoInspection } from "@/lib/web-api";
 import { formatDate, formatInspectionStatus } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
+import { StatusChip } from "@/components/ui/status-chip";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 function EvidenceView({ ev }: { ev: EvidenceDto }) {
   return (
     <div className="rounded-md border border-border p-3">
       <div className="mb-2 flex items-center gap-2">
-        <Badge>{ev.kind}</Badge>
-        {ev.accepted === true && <span className="text-xs text-green-600">aceita</span>}
-        {ev.accepted === false && <span className="text-xs text-destructive">rejeitada</span>}
-        {ev.accepted === null && <span className="text-xs text-muted-foreground">pendente</span>}
+        <Badge tone="neutral">{ev.kind}</Badge>
+        {ev.accepted === true && <StatusChip tone="success">Aceita</StatusChip>}
+        {ev.accepted === false && <StatusChip tone="danger">Rejeitada</StatusChip>}
+        {ev.accepted === null && <StatusChip tone="neutral">Pendente</StatusChip>}
       </div>
       {ev.kind === "photo" && ev.filePath && (
         // filePath holds a signed URL returned by the API for display.
@@ -30,9 +31,9 @@ function ItemView({ item }: { item: InspectionItemDto }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
+        <CardTitle className="flex items-center justify-between gap-3">
           <span>{item.labelSnapshot}</span>
-          <Badge>{item.status}</Badge>
+          <StatusChip status={item.status}>{item.status.replace(/_/g, " ")}</StatusChip>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -52,9 +53,9 @@ function ItemView({ item }: { item: InspectionItemDto }) {
 export function InspectionLaudo({ laudo }: { laudo: LaudoInspection }) {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Laudo da vistoria</h1>
-        <Badge>{formatInspectionStatus(laudo.status)}</Badge>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold tracking-tight">Laudo da vistoria</h1>
+        <StatusChip status={laudo.status}>{formatInspectionStatus(laudo.status)}</StatusChip>
       </div>
 
       <Card>

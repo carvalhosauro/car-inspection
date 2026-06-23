@@ -22,7 +22,7 @@ export function InspectionFilters({
   onChange: (next: FiltersState) => void;
 }) {
   return (
-    <div className="flex flex-wrap items-end gap-3">
+    <div className="flex flex-wrap items-end gap-3 [&>div]:w-full [&>div]:sm:w-48">
       <div className="space-y-1">
         <Label htmlFor="f-status">Status</Label>
         <NativeSelect

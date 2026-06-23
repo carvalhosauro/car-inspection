@@ -38,7 +38,7 @@ export function LoginForm() {
   }
 
   return (
-    <form className="w-full max-w-sm space-y-4">
+    <form className="w-full space-y-4">
       <div className="space-y-2">
         <Label htmlFor="email">E-mail</Label>
         <HtmlInput
@@ -60,17 +60,19 @@ export function LoginForm() {
         />
       </div>
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm font-medium text-destructive ring-1 ring-inset ring-red-200">
           {error}
         </p>
       )}
-      <Button
-        label={loading ? "Entrando..." : "Entrar"}
-        onPress={handleSubmit}
-        disabled={loading}
-        loading={loading}
-        variant="primary"
-      />
+      <div className="[&_button]:w-full [&_button]:justify-center">
+        <Button
+          label={loading ? "Entrando..." : "Entrar"}
+          onPress={handleSubmit}
+          disabled={loading}
+          loading={loading}
+          variant="primary"
+        />
+      </div>
     </form>
   );
 }

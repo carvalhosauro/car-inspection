@@ -80,13 +80,13 @@ export function TemplateEditor() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 rounded-lg border border-border bg-card p-6 shadow-card">
       <div className="space-y-2">
         <Label htmlFor="tpl-name">Nome do template</Label>
         <HtmlInput id="tpl-name" value={name} onChange={(e) => setName(e.target.value)} />
       </div>
 
-      <div className="rounded-lg border border-border p-4">
+      <div className="rounded-lg border border-border bg-muted/30 p-4">
         <h3 className="mb-3 font-semibold">Novo item</h3>
         <div className="space-y-2">
           <Label htmlFor="item-label">Rótulo do item</Label>
@@ -123,7 +123,7 @@ export function TemplateEditor() {
         </label>
         <button
           type="button"
-          className="mt-3 rounded-md border border-border px-3 py-1 text-sm hover:bg-muted"
+          className="mt-3 inline-flex items-center rounded-md border border-input bg-card px-3 py-1.5 text-sm font-medium shadow-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
           onClick={addRequirement}
         >
           Adicionar requisito
@@ -132,7 +132,7 @@ export function TemplateEditor() {
         {pendingReqs.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-2">
             {pendingReqs.map((r, i) => (
-              <span key={i} className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium">
+              <span key={i} className="rounded-full bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground">
                 {r.kind}{r.required ? " *" : ""}
               </span>
             ))}
@@ -141,7 +141,7 @@ export function TemplateEditor() {
 
         <button
           type="button"
-          className="mt-4 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
+          className="mt-4 inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
           onClick={addItem}
         >
           Adicionar item
@@ -151,11 +151,11 @@ export function TemplateEditor() {
       {items.length > 0 && (
         <ul className="space-y-2">
           {items.map((it, i) => (
-            <li key={i} className="rounded-md border border-border p-3">
+            <li key={i} className="rounded-md border border-border bg-card p-3">
               <p className="font-medium">{it.label}</p>
               <div className="mt-1 flex flex-wrap gap-2">
                 {it.requirements.map((r, j) => (
-                  <span key={j} className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium">
+                  <span key={j} className="rounded-full bg-accent px-2 py-0.5 text-xs font-medium text-accent-foreground">
                     {r.kind}
                   </span>
                 ))}
@@ -167,7 +167,7 @@ export function TemplateEditor() {
 
       <button
         type="button"
-        className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+        className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 disabled:cursor-not-allowed disabled:opacity-50"
         onClick={save}
         disabled={createMut.isPending || !name.trim() || items.length === 0}
       >
