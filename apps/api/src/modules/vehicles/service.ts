@@ -6,6 +6,9 @@ import type {
 } from "@vistoria/contracts";
 import type { Tx } from "../../core/auth/types.js";
 import { errors } from "../../core/errors/app-error.js";
+import { isUniqueViolation } from "../../core/db/errors.js";
+import { buildPage } from "../../core/utils/pagination.js";
+import { VEHICLE_STATUS } from "../../core/constants/status.js";
 import {
   insertVehicle,
   getVehicle,
@@ -50,7 +53,7 @@ export async function create(
     const row = await insertVehicle(tx, tenantId, input);
     return toDto(row as Row);
   } catch (err: unknown) {
-    if (typeof err === "object" && err !== null && "code" in err && (err as {code:string}).code === "23505") {
+    if (isUniqueViolation(err)) {
       throw errors.conflict("Vehicle with this plate already exists in this tenant");
     }
     throw err;
@@ -69,12 +72,7 @@ export async function list(
   query: PaginationQuery,
 ): Promise<{ items: VehicleDto[]; nextCursor: string | null }> {
   const rows = await listVehicles(tx, tenantId, query.cursor, query.limit);
-  const hasMore = rows.length > query.limit;
-  const page = hasMore ? rows.slice(0, query.limit) : rows;
-  return {
-    items: page.map((r) => toDto(r as Row)),
-    nextCursor: hasMore ? page[page.length - 1]!.id : null,
-  };
+  return buildPage(rows, query.limit, (r) => toDto(r as Row));
 }
 
 export async function update(
@@ -89,6 +87,7 @@ export async function update(
 }
 
 export async function softDelete(tx: Tx, id: string, tenantId: string): Promise<void> {
-  const row = await updateVehicle(tx, id, tenantId, { status: "manutencao" });
+  // Sets vehicle to maintenance status rather than hard-deleting
+  const row = await updateVehicle(tx, id, tenantId, { status: VEHICLE_STATUS.manutencao });
   if (!row) throw errors.notFound("Vehicle not found");
 }

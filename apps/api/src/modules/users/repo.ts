@@ -23,7 +23,7 @@ export async function listUsers(
 ) {
   const conditions = [eq(schema.users.tenantId, tenantId)];
   if (cursor) conditions.push(gt(schema.users.id, cursor));
-  const where = conditions.length > 0 ? and(...conditions) : undefined;
+  const where = and(...conditions);
   return tx
     .select()
     .from(schema.users)

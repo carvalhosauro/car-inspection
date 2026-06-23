@@ -9,7 +9,7 @@ import {
   pageSchema,
 } from "@vistoria/contracts";
 import { requireRole } from "../../core/auth/require-role.js";
-import { errors } from "../../core/errors/app-error.js";
+import { requireTenant } from "../../core/auth/require-tenant.js";
 import * as service from "./service.js";
 
 export async function userRoutes(app: FastifyInstance): Promise<void> {
@@ -23,8 +23,8 @@ export async function userRoutes(app: FastifyInstance): Promise<void> {
       schema: { body: createUserInput, response: { 201: userDto } },
     },
     async (request, reply) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Gestor must belong to a tenant");
-      const dto = await service.create(request.tx, request.ctx.tenantId, request.body);
+      const tenantId = requireTenant(request);
+      const dto = await service.create(request.tx, tenantId, request.body);
       reply.status(201).send(dto);
     },
   );
@@ -35,7 +35,7 @@ export async function userRoutes(app: FastifyInstance): Promise<void> {
       preHandler: requireRole(["gestor"]),
       schema: { querystring: paginationQuerySchema, response: { 200: pageSchema(userDto) } },
     },
-    async (request) => service.list(request.tx, request.ctx.tenantId!, request.query),
+    async (request) => service.list(request.tx, requireTenant(request), request.query),
   );
 
   r.patch(
@@ -44,14 +44,14 @@ export async function userRoutes(app: FastifyInstance): Promise<void> {
       preHandler: requireRole(["gestor"]),
       schema: { params: idParams, body: updateUserInput, response: { 200: userDto } },
     },
-    async (request) => service.update(request.tx, request.ctx.tenantId!, request.params.id, request.body),
+    async (request) => service.update(request.tx, requireTenant(request), request.params.id, request.body),
   );
 
   r.delete(
     "/:id",
     { preHandler: requireRole(["gestor"]), schema: { params: idParams } },
     async (request, reply) => {
-      await service.softDelete(request.tx, request.ctx.tenantId!, request.params.id);
+      await service.softDelete(request.tx, requireTenant(request), request.params.id);
       reply.status(204).send();
     },
   );

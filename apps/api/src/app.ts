@@ -24,6 +24,9 @@ import { reportRoutes } from "./modules/reports/route.js";
 
 const PUBLIC_ROUTES = ["/health", "/v1/auth/login", "/v1/auth/refresh"];
 
+const GLOBAL_RATE_LIMIT_MAX = 10;
+const GLOBAL_RATE_LIMIT_WINDOW = "1 minute";
+
 export async function buildApp(): Promise<FastifyInstance> {
   const app = Fastify({ logger: false }).withTypeProvider<ZodTypeProvider>();
 
@@ -32,7 +35,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   app.setErrorHandler(errorHandler);
 
   await app.register(cors, { origin: true, credentials: true });
-  await app.register(rateLimit, { global: false, max: 10, timeWindow: "1 minute" });
+  await app.register(rateLimit, { global: false, max: GLOBAL_RATE_LIMIT_MAX, timeWindow: GLOBAL_RATE_LIMIT_WINDOW });
 
   await app.register(swagger, {
     openapi: { info: { title: "Vistoria API", version: "1.0.0" } },

@@ -1,7 +1,9 @@
 import { eq } from "drizzle-orm";
 import { db, schema } from "@vistoria/db";
 
-export async function findUserByEmail(email: string) {
+type UserRow = typeof schema.users.$inferSelect;
+
+export async function findUserByEmail(email: string): Promise<UserRow | undefined> {
   const rows = await db
     .select()
     .from(schema.users)
@@ -10,7 +12,7 @@ export async function findUserByEmail(email: string) {
   return rows[0];
 }
 
-export async function findUserById(id: string) {
+export async function findUserById(id: string): Promise<UserRow | undefined> {
   const rows = await db
     .select()
     .from(schema.users)

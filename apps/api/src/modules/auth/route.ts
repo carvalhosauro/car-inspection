@@ -4,13 +4,17 @@ import { loginInput, tokenPair, refreshInput, meOutput } from "@vistoria/contrac
 import { z } from "zod";
 import * as service from "./service.js";
 
+const LOGIN_RATE_LIMIT_MAX = 10;
+const REFRESH_RATE_LIMIT_MAX = 20;
+const AUTH_RATE_LIMIT_WINDOW = "1 minute";
+
 export async function authRoutes(app: FastifyInstance): Promise<void> {
   const r = app.withTypeProvider<ZodTypeProvider>();
 
   r.post(
     "/login",
     {
-      config: { rateLimit: { max: 10, timeWindow: "1 minute" } },
+      config: { rateLimit: { max: LOGIN_RATE_LIMIT_MAX, timeWindow: AUTH_RATE_LIMIT_WINDOW } },
       schema: { body: loginInput, response: { 200: tokenPair } },
     },
     async (request) => service.login(request.body),
@@ -19,7 +23,7 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
   r.post(
     "/refresh",
     {
-      config: { rateLimit: { max: 20, timeWindow: "1 minute" } },
+      config: { rateLimit: { max: REFRESH_RATE_LIMIT_MAX, timeWindow: AUTH_RATE_LIMIT_WINDOW } },
       schema: { body: refreshInput, response: { 200: z.object({ accessToken: z.string() }) } },
     },
     async (request) => service.refresh(request.body.refreshToken),

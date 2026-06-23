@@ -11,7 +11,7 @@ import {
   pageSchema,
 } from "@vistoria/contracts";
 import { requireRole } from "../../core/auth/require-role.js";
-import { errors } from "../../core/errors/app-error.js";
+import { requireTenant } from "../../core/auth/require-tenant.js";
 import * as service from "./service.js";
 
 const createItemBody = z.object({
@@ -55,8 +55,8 @@ export async function checklistRoutes(app: FastifyInstance): Promise<void> {
       schema: { body: createChecklistTemplateInput, response: { 201: checklistTemplateDto } },
     },
     async (request, reply) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
-      const dto = await service.createTemplate(request.tx, request.ctx.tenantId, request.body);
+      const tenantId = requireTenant(request);
+      const dto = await service.createTemplate(request.tx, tenantId, request.body);
       reply.status(201).send(dto);
     },
   );
@@ -77,8 +77,8 @@ export async function checklistRoutes(app: FastifyInstance): Promise<void> {
     "/checklist-templates/:id",
     { preHandler: guard, schema: { params: idParams, response: { 200: checklistTemplateDto } } },
     async (request) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
-      return service.getTemplateDto(request.tx, request.ctx.tenantId, request.params.id);
+      const tenantId = requireTenant(request);
+      return service.getTemplateDto(request.tx, tenantId, request.params.id);
     },
   );
 
@@ -89,10 +89,10 @@ export async function checklistRoutes(app: FastifyInstance): Promise<void> {
       schema: { params: idParams, body: createItemBody, response: { 201: checklistItemDto } },
     },
     async (request, reply) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      const tenantId = requireTenant(request);
       const dto = await service.addItem(
         request.tx,
-        request.ctx.tenantId,
+        tenantId,
         request.params.id,
         request.body,
       );
@@ -107,8 +107,8 @@ export async function checklistRoutes(app: FastifyInstance): Promise<void> {
       schema: { params: idParams, body: patchItemBody, response: { 200: checklistItemDto } },
     },
     async (request) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
-      return service.patchItem(request.tx, request.ctx.tenantId, request.params.id, request.body);
+      const tenantId = requireTenant(request);
+      return service.patchItem(request.tx, tenantId, request.params.id, request.body);
     },
   );
 
@@ -119,10 +119,10 @@ export async function checklistRoutes(app: FastifyInstance): Promise<void> {
       schema: { params: idParams, body: createRequirementBody, response: { 201: requirementDto } },
     },
     async (request, reply) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      const tenantId = requireTenant(request);
       const dto = await service.addRequirement(
         request.tx,
-        request.ctx.tenantId,
+        tenantId,
         request.params.id,
         request.body,
       );
