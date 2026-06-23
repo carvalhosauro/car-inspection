@@ -15,13 +15,15 @@ export const vehicleDto = z.object({
 });
 export type VehicleDto = z.infer<typeof vehicleDto>;
 
+const DEFAULT_VEHICLE_STATUS = "disponivel";
+
 export const createVehicleInput = z.object({
   plate: z.string().min(1),
   model: z.string().min(1),
   year: z.number().int().optional(),
   color: z.string().optional(),
   currentKm: z.number().int().nonnegative().default(0),
-  status: z.enum(VEHICLE_STATUSES).default("disponivel"),
+  status: z.enum(VEHICLE_STATUSES).default(DEFAULT_VEHICLE_STATUS),
 });
 export type CreateVehicleInput = z.infer<typeof createVehicleInput>;
 

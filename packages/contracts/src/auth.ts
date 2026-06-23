@@ -1,9 +1,11 @@
 import { z } from "zod";
 import { USER_ROLES } from "./enums";
 
+export const passwordSchema = z.string().min(6);
+
 export const loginInput = z.object({
   email: z.string().email(),
-  password: z.string().min(6),
+  password: passwordSchema,
 });
 export type LoginInput = z.infer<typeof loginInput>;
 

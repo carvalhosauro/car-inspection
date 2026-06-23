@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { passwordSchema } from "./auth";
 
 export const tenantDto = z.object({
   id: z.string().uuid(),
@@ -15,7 +16,7 @@ export const createTenantInput = z.object({
   gestor: z.object({
     name: z.string().min(1),
     email: z.string().email(),
-    password: z.string().min(6),
+    password: passwordSchema,
   }),
 });
 export type CreateTenantInput = z.infer<typeof createTenantInput>;
