@@ -8,7 +8,11 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "db:migrate": "pnpm --filter @vistoria/db db:migrate",
+    "db:seed": "pnpm --filter @vistoria/db db:seed",
+    "db:setup": "bash scripts/db-setup.sh",
+    "dev:api": "bash scripts/dev.sh"
   },
   "devDependencies": {
     "turbo": "^2.1.0",

@@ -1,8 +1,19 @@
 import argon2 from "argon2";
+import { eq } from "drizzle-orm";
 import { db, schema } from "./index";
 import { newId } from "./id";
 
 async function main() {
+  const existing = await db
+    .select({ id: schema.tenants.id })
+    .from(schema.tenants)
+    .where(eq(schema.tenants.slug, "demo"))
+    .limit(1);
+  if (existing.length > 0) {
+    console.log("Seed skipped — demo tenant already exists. Login: gestor@demo.dev / senha123");
+    process.exit(0);
+  }
+
   const tenantId = newId();
   await db.insert(schema.tenants).values({
     id: tenantId, name: "Locadora Demo", slug: "demo", active: true,

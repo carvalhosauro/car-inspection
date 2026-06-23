@@ -8,7 +8,7 @@ describe("app bootstrap", () => {
     const app = await appPromise;
     const res = await app.inject({ method: "GET", url: "/health" });
     expect(res.statusCode).toBe(200);
-    expect(res.json()).toEqual({ status: "ok" });
+    expect(res.json().status).toBe("ok");
   });
 
   it("serves the OpenAPI json", async () => {

@@ -3,10 +3,32 @@ import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { requireRole } from "../../core/auth/require-role.js";
 import { errors } from "../../core/errors/app-error.js";
+import { consumeLocalUpload } from "../../core/storage/local.js";
+import { env } from "../../env.js";
 import * as service from "./service.js";
 
 export async function uploadRoutes(app: FastifyInstance): Promise<void> {
   const r = app.withTypeProvider<ZodTypeProvider>();
+
+  if (env.STORAGE_DRIVER === "local") {
+    r.put(
+      "/local/:token",
+      {
+        schema: {
+          params: z.object({ token: z.string().min(1) }),
+          response: { 204: z.null() },
+        },
+      },
+      async (request, reply) => {
+        try {
+          await consumeLocalUpload(request.params.token, request.body as Buffer);
+          return reply.status(204).send(null);
+        } catch {
+          throw errors.badRequest("Invalid or expired upload token");
+        }
+      },
+    );
+  }
 
   r.post(
     "/sign",

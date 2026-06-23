@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 const createSignedUploadUrl = vi.fn();
 const download = vi.fn();
@@ -12,8 +12,20 @@ vi.mock("@supabase/supabase-js", () => ({
 }));
 
 import { signUploadUrl, downloadBytes } from "./index.js";
+import { resetEnvCache } from "../../env.js";
 
-describe("storage", () => {
+describe("storage (supabase driver)", () => {
+  beforeEach(() => {
+    resetEnvCache();
+    process.env.STORAGE_DRIVER = "supabase";
+    process.env.SUPABASE_URL = "http://localhost:54321";
+    process.env.SUPABASE_SERVICE_KEY = "test-key";
+    process.env.SUPABASE_STORAGE_BUCKET = "vistoria-photos";
+    process.env.DATABASE_URL = "postgresql://u:p@localhost:5432/db";
+    process.env.JWT_SECRET = "a";
+    process.env.JWT_REFRESH_SECRET = "b";
+  });
+
   it("signUploadUrl returns the path, signedUrl and token", async () => {
     createSignedUploadUrl.mockResolvedValueOnce({
       data: { path: "p/1.jpg", token: "tok", signedUrl: "http://x/upload" },

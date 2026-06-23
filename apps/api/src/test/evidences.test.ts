@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 
 // Stub Storage + Vision so the test never hits the network.
 vi.mock("../core/storage/index", () => ({
+  initStorage: vi.fn(async () => {}),
   downloadBytes: vi.fn(async () => Buffer.from([1, 2, 3])),
   signUploadUrl: vi.fn(),
 }));

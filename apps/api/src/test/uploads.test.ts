@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 
 vi.mock("../core/storage/index", () => ({
+  initStorage: vi.fn(async () => {}),
   signUploadUrl: vi.fn(async (filePath: string) => ({
     filePath,
     signedUrl: `http://storage.test/upload/${filePath}`,
