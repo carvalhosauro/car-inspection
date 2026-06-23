@@ -5,13 +5,15 @@ import type {
   CreateInspectionInput,
   InspectionDto,
   InspectionItemDto,
-  EvidenceDto,
   AuditInput,
   PaginationQuery,
   ProofKind,
 } from "@vistoria/contracts";
 import type { Tx } from "../../core/auth/types.js";
 import { errors } from "../../core/errors/app-error.js";
+import { INSPECTION_STATUS, INSPECTION_RESULT, ITEM_STATUS } from "../../core/constants/status.js";
+import { buildPage } from "../../core/utils/pagination.js";
+import { evToDto } from "../evidences/dto.js";
 import {
   getVehicle,
   getTemplate,
@@ -28,26 +30,16 @@ import {
   type InspectionFilter,
 } from "./repo.js";
 
-type InspectionRow = {
-  id: string;
-  tenantId: string;
-  vehicleId: string;
-  inspectorId: string;
-  templateId: string;
-  type: InspectionDto["type"];
-  status: InspectionDto["status"];
-  result: InspectionDto["result"];
-  scheduledFor: Date | null;
-  startedAt: Date | null;
-  finishedAt: Date | null;
-  geoLat: string | null;
-  geoLng: string | null;
-  uniqueCode: string | null;
-  auditedBy: string | null;
-  auditNote: string | null;
-  auditedAt: Date | null;
-  createdAt: Date;
-};
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const INSPECTION_CODE_PREFIX = "VST";
+
+type InspectionRow = typeof schema.inspections.$inferSelect;
+
+async function requireInspection(tx: Tx, tenantId: string, id: string) {
+  const insp = await getInspection(tx, tenantId, id);
+  if (!insp) throw errors.notFound("Inspection not found");
+  return insp;
+}
 
 function toDto(row: InspectionRow): InspectionDto {
   return {
@@ -134,49 +126,22 @@ async function itemToDto(tx: Tx, row: {
   };
 }
 
-function evToDto(row: {
-  id: string;
-  inspectionItemId: string;
-  requirementId: string | null;
-  kind: string;
-  filePath: string | null;
-  value: unknown;
-  validation: unknown;
-  accepted: boolean | null;
-  createdAt: Date;
-}): EvidenceDto {
-  return {
-    id: row.id,
-    inspectionItemId: row.inspectionItemId,
-    requirementId: row.requirementId,
-    kind: row.kind as ProofKind,
-    filePath: row.filePath,
-    value: (row.value as Record<string, unknown> | null) ?? null,
-    validation: (row.validation as Record<string, unknown> | null) ?? null,
-    accepted: row.accepted,
-    createdAt: row.createdAt.toISOString(),
-  };
-}
-
 export async function getById(tx: Tx, tenantId: string, id: string): Promise<InspectionDto> {
-  const row = await getInspection(tx, tenantId, id);
-  if (!row) throw errors.notFound("Inspection not found");
+  const row = await requireInspection(tx, tenantId, id);
   return toDto(row as InspectionRow);
 }
 
 export async function items(tx: Tx, tenantId: string, inspectionId: string): Promise<InspectionItemDto[]> {
-  const insp = await getInspection(tx, tenantId, inspectionId);
-  if (!insp) throw errors.notFound("Inspection not found");
+  await requireInspection(tx, tenantId, inspectionId);
   const rows = await listInspectionItems(tx, tenantId, inspectionId);
   return Promise.all(rows.map((row) => itemToDto(tx, row)));
 }
 
 export async function start(tx: Tx, tenantId: string, id: string): Promise<InspectionDto> {
-  const insp = await getInspection(tx, tenantId, id);
-  if (!insp) throw errors.notFound("Inspection not found");
-  if (insp.status !== "atribuida") throw errors.unprocessable("Inspection already started");
+  const insp = await requireInspection(tx, tenantId, id);
+  if (insp.status !== INSPECTION_STATUS.atribuida) throw errors.unprocessable("Inspection already started");
   const row = await updateInspection(tx, tenantId, id, {
-    status: "em_andamento",
+    status: INSPECTION_STATUS.em_andamento,
     startedAt: new Date(),
   });
   return toDto(row as InspectionRow);
@@ -188,9 +153,8 @@ export async function finish(
   id: string,
   geo: { geoLat: number; geoLng: number },
 ): Promise<InspectionDto> {
-  const insp = await getInspection(tx, tenantId, id);
-  if (!insp) throw errors.notFound("Inspection not found");
-  if (insp.status !== "em_andamento") throw errors.unprocessable("Inspection is not in progress");
+  const insp = await requireInspection(tx, tenantId, id);
+  if (insp.status !== INSPECTION_STATUS.em_andamento) throw errors.unprocessable("Inspection is not in progress");
 
   const tenant = await tx
     .select()
@@ -198,14 +162,14 @@ export async function finish(
     .where(eq(schema.tenants.id, insp.tenantId))
     .limit(1);
   const slug = tenant[0]?.slug ?? "tenant";
-  const uniqueCode = `VST-${slug}-${ulid()}`;
+  const uniqueCode = `${INSPECTION_CODE_PREFIX}-${slug}-${ulid()}`;
 
   const allItems = await listInspectionItems(tx, tenantId, id);
-  const hasNonConforme = allItems.some((i) => i.status === "nao_conforme");
+  const hasNonConforme = allItems.some((i) => i.status === ITEM_STATUS.nao_conforme);
 
   const row = await updateInspection(tx, tenantId, id, {
-    status: "concluida",
-    result: hasNonConforme ? "com_pendencias" : "conforme",
+    status: INSPECTION_STATUS.concluida,
+    result: hasNonConforme ? INSPECTION_RESULT.com_pendencias : INSPECTION_RESULT.conforme,
     finishedAt: new Date(),
     geoLat: geo.geoLat.toString(),
     geoLng: geo.geoLng.toString(),
@@ -221,9 +185,8 @@ export async function audit(
   auditedBy: string,
   input: AuditInput,
 ): Promise<InspectionDto> {
-  const insp = await getInspection(tx, tenantId, id);
-  if (!insp) throw errors.notFound("Inspection not found");
-  if (insp.status !== "concluida") {
+  const insp = await requireInspection(tx, tenantId, id);
+  if (insp.status !== INSPECTION_STATUS.concluida) {
     throw errors.unprocessable("Only a concluded inspection can be audited");
   }
   const row = await updateInspection(tx, tenantId, id, {
@@ -240,8 +203,7 @@ export async function getAudit(
   tenantId: string,
   id: string,
 ): Promise<{ auditedBy: string | null; auditNote: string | null; auditedAt: string | null; result: InspectionDto["result"] }> {
-  const row = await getInspection(tx, tenantId, id);
-  if (!row) throw errors.notFound("Inspection not found");
+  const row = await requireInspection(tx, tenantId, id);
   const insp = row as InspectionRow;
   return {
     auditedBy: insp.auditedBy ?? null,
@@ -258,22 +220,16 @@ export async function list(
   query: PaginationQuery,
 ): Promise<{ items: InspectionDto[]; nextCursor: string | null }> {
   const rows = await listInspections(tx, tenantId, filter, query.cursor, query.limit);
-  const hasMore = rows.length > query.limit;
-  const page = hasMore ? rows.slice(0, query.limit) : rows;
-  return {
-    items: page.map((r) => toDto(r as InspectionRow)),
-    nextCursor: hasMore ? page[page.length - 1]!.id : null,
-  };
+  return buildPage(rows, query.limit, (r) => toDto(r as InspectionRow));
 }
 
 export async function myToday(
   tx: Tx,
-  tenantId: string,
   inspectorId: string,
 ): Promise<{ items: InspectionDto[] }> {
   const now = new Date();
   const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const dayEnd = new Date(dayStart.getTime() + 86_400_000);
+  const dayEnd = new Date(dayStart.getTime() + MS_PER_DAY);
   const rows = await listInspectorToday(tx, inspectorId, dayStart, dayEnd);
   return { items: rows.map((r) => toDto(r as InspectionRow)) };
 }

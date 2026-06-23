@@ -8,7 +8,7 @@ import {
   ITEM_STATUSES,
 } from "@vistoria/contracts";
 import { requireRole } from "../../core/auth/require-role.js";
-import { errors } from "../../core/errors/app-error.js";
+import { requireTenant } from "../../core/auth/require-tenant.js";
 import * as service from "./service.js";
 
 const idParams = z.object({ id: z.string().uuid() });
@@ -44,10 +44,10 @@ export async function evidenceRoutes(app: FastifyInstance): Promise<void> {
       },
     },
     async (request, reply) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      const tenantId = requireTenant(request);
       const dto = await service.addChild(
         request.tx,
-        request.ctx.tenantId,
+        tenantId,
         request.params.id,
         request.body,
       );
@@ -62,10 +62,10 @@ export async function evidenceRoutes(app: FastifyInstance): Promise<void> {
       schema: { params: idParams, body: createEvidenceInput, response: { 201: evidenceDto } },
     },
     async (request, reply) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      const tenantId = requireTenant(request);
       const dto = await service.createEvidence(
         request.tx,
-        request.ctx.tenantId,
+        tenantId,
         request.params.id,
         request.body,
       );

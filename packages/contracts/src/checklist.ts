@@ -50,3 +50,6 @@ export const createChecklistTemplateInput = z.object({
   items: z.array(createChecklistItemInput).default([]),
 });
 export type CreateChecklistTemplateInput = z.infer<typeof createChecklistTemplateInput>;
+
+export type CreateRequirementInput = z.infer<typeof createRequirementInput>;
+export type CreateChecklistItemInput = z.infer<typeof createChecklistItemInput>;

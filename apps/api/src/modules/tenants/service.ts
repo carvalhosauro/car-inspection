@@ -4,6 +4,8 @@ import type { CreateTenantInput, TenantDto, PaginationQuery } from "@vistoria/co
 import type { Tx } from "../../core/auth/types.js";
 import { hashPassword } from "../../core/auth/password.js";
 import { errors } from "../../core/errors/app-error.js";
+import { isUniqueViolation } from "../../core/db/errors.js";
+import { buildPage } from "../../core/utils/pagination.js";
 import { insertTenantWithGestor, listTenants } from "./repo.js";
 
 function toDto(row: {
@@ -28,12 +30,7 @@ export async function createTenant(tx: Tx, input: CreateTenantInput): Promise<Te
     const row = await insertTenantWithGestor(tx, input, hash);
     return toDto(row);
   } catch (err: unknown) {
-    if (
-      typeof err === "object" &&
-      err !== null &&
-      "code" in err &&
-      (err as { code: string }).code === "23505"
-    ) {
+    if (isUniqueViolation(err)) {
       throw errors.conflict("Tenant slug or gestor email already exists");
     }
     throw err;
@@ -45,12 +42,7 @@ export async function list(
   query: PaginationQuery,
 ): Promise<{ items: TenantDto[]; nextCursor: string | null }> {
   const rows = await listTenants(tx, query.cursor, query.limit);
-  const hasMore = rows.length > query.limit;
-  const page = hasMore ? rows.slice(0, query.limit) : rows;
-  return {
-    items: page.map(toDto),
-    nextCursor: hasMore ? page[page.length - 1]!.id : null,
-  };
+  return buildPage(rows, query.limit, toDto);
 }
 
 export async function setActive(tx: Tx, id: string, active: boolean): Promise<TenantDto> {

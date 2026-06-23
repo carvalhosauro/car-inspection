@@ -22,11 +22,11 @@ export interface BadgeConfig {
 }
 
 export const BADGE_CONFIG: Record<BadgeVariant, BadgeConfig> = {
-  concluido: { label: "Concluído", icon: "CheckCircle2", color: colors.success, bg: "#DCFCE7" },
-  "em-andamento": { label: "Em andamento", icon: "Clock3", color: colors.primary, bg: "#DBEAFE" },
-  pendente: { label: "Pendente", icon: "AlertCircle", color: colors.warning, bg: "#FEF3C7" },
-  reprovado: { label: "Reprovado", icon: "XCircle", color: colors.error, bg: "#FEE2E2" },
-  agendado: { label: "Agendado", icon: "CalendarClock", color: colors.neutral600, bg: "#F1F5F9" },
+  concluido: { label: "Concluído", icon: "CheckCircle2", color: colors.success, bg: colors.successBg },
+  "em-andamento": { label: "Em andamento", icon: "Clock3", color: colors.primary, bg: colors.primaryBg },
+  pendente: { label: "Pendente", icon: "AlertCircle", color: colors.warning, bg: colors.warningBg },
+  reprovado: { label: "Reprovado", icon: "XCircle", color: colors.error, bg: colors.errorBg },
+  agendado: { label: "Agendado", icon: "CalendarClock", color: colors.neutral600, bg: colors.neutralBg },
 };
 
 export interface BadgeProps {

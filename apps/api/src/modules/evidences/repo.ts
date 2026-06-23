@@ -1,6 +1,7 @@
 import { and, asc, eq } from "drizzle-orm";
 import { schema, newId } from "@vistoria/db";
 import type { Tx } from "../../core/auth/types.js";
+import { ITEM_STATUS, PROOF_KIND } from "../../core/constants/status.js";
 
 export async function getInspectionItem(tx: Tx, id: string) {
   const rows = await tx
@@ -59,7 +60,7 @@ export async function priorPhotoHashesForVehicle(tx: Tx, vehicleId: string): Pro
     .where(
       and(
         eq(schema.inspections.vehicleId, vehicleId),
-        eq(schema.inspectionEvidences.kind, "photo"),
+        eq(schema.inspectionEvidences.kind, PROOF_KIND.photo),
       ),
     );
   return rows
@@ -95,7 +96,7 @@ export async function updateInspectionItem(
 ) {
   const rows = await tx
     .update(schema.inspectionItems)
-    .set(data as never)
+    .set(data as any) // TODO: align Partial<{ status; justification }> with Drizzle's inferred insert type
     .where(eq(schema.inspectionItems.id, id))
     .returning();
   return rows[0];
@@ -122,7 +123,7 @@ export async function insertChildItem(
       order: data.order,
       labelSnapshot: data.labelSnapshot,
       requirementsSnapshot: [],
-      status: "pendente",
+      status: ITEM_STATUS.pendente,
     })
     .returning();
   return rows[0]!;

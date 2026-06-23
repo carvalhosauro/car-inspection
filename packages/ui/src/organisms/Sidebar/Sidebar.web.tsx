@@ -33,12 +33,13 @@ export const Sidebar: FC<SidebarProps> = ({ links = DEFAULT_LINKS, activeId, col
   >
     <span className={styles.logo}>{collapsed ? "V" : "Vistoria AI"}</span>
     {links.map((link) => {
-      const Icon = SIDEBAR_ICONS[link.id as keyof typeof SIDEBAR_ICONS] ?? Circle;
+      const Icon = SIDEBAR_ICONS[link.id] ?? Circle;
       return (
         <button
           key={link.id}
           type="button"
           className={styles.link}
+          aria-label={link.label}
           aria-current={isActive(link.id, activeId) ? "page" : undefined}
           onClick={() => onNavigate?.(link.id)}
         >

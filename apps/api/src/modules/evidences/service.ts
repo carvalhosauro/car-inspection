@@ -1,4 +1,4 @@
-import { isProofKind, type ProofKind } from "@vistoria/contracts";
+import { isProofKind } from "@vistoria/contracts";
 import type {
   CreateEvidenceInput,
   EvidenceDto,
@@ -8,6 +8,8 @@ import type { Tx } from "../../core/auth/types.js";
 import { errors } from "../../core/errors/app-error.js";
 import { downloadBytes } from "../../core/storage/index.js";
 import { aiRegistry, type HandlerCtx } from "../../core/ai/registry.js";
+import { ITEM_STATUS } from "../../core/constants/status.js";
+import { evToDto } from "./dto.js";
 import {
   getInspectionItem,
   getInspection,
@@ -19,30 +21,6 @@ import {
   insertChildItem,
   listItemEvidences,
 } from "./repo.js";
-
-function evToDto(row: {
-  id: string;
-  inspectionItemId: string;
-  requirementId: string | null;
-  kind: string;
-  filePath: string | null;
-  value: unknown;
-  validation: unknown;
-  accepted: boolean | null;
-  createdAt: Date;
-}): EvidenceDto {
-  return {
-    id: row.id,
-    inspectionItemId: row.inspectionItemId,
-    requirementId: row.requirementId,
-    kind: row.kind as ProofKind,
-    filePath: row.filePath,
-    value: (row.value as Record<string, unknown> | null) ?? null,
-    validation: (row.validation as Record<string, unknown> | null) ?? null,
-    accepted: row.accepted,
-    createdAt: row.createdAt.toISOString(),
-  };
-}
 
 export async function createEvidence(
   tx: Tx,
@@ -99,7 +77,7 @@ export async function createEvidence(
   });
 
   if (result.accepted === true) {
-    await updateInspectionItem(tx, inspectionItemId, { status: "conforme" });
+    await updateInspectionItem(tx, inspectionItemId, { status: ITEM_STATUS.conforme });
   }
 
   return evToDto(row);

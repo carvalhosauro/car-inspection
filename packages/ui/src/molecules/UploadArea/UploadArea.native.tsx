@@ -19,7 +19,8 @@ const styles = StyleSheet.create({
   small: { color: colors.neutral600, fontSize: 12 },
 });
 
-export const UploadArea: FC<UploadAreaProps> = () => (
+// Native file picker not yet implemented — props reserved for future use
+export const UploadArea: FC<UploadAreaProps> = ({ state: _state, onFiles: _onFiles }) => (
   <Pressable style={styles.area} accessibilityRole="button">
     <Text style={styles.text}>Toque para selecionar uma imagem</Text>
     <Text style={styles.small}>PNG ou JPG até 10MB</Text>

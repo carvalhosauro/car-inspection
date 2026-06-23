@@ -3,7 +3,7 @@ import { schema, newId } from "@vistoria/db";
 import type { Tx } from "../../core/auth/types.js";
 import type { ProofKind } from "@vistoria/contracts";
 
-export async function insertTemplate(tx: Tx, tenantId: string, name: string) {
+export async function insertTemplate(tx: Tx, tenantId: string, name: string): Promise<typeof schema.checklistTemplates.$inferSelect> {
   const rows = await tx
     .insert(schema.checklistTemplates)
     .values({ id: newId(), tenantId, name, active: true })
@@ -16,7 +16,7 @@ export async function insertItem(
   tenantId: string,
   templateId: string,
   data: { label: string; description?: string; order: number },
-) {
+): Promise<typeof schema.checklistItems.$inferSelect> {
   const rows = await tx
     .insert(schema.checklistItems)
     .values({
@@ -36,7 +36,7 @@ export async function insertRequirement(
   tenantId: string,
   checklistItemId: string,
   data: { kind: ProofKind; required: boolean; config?: Record<string, unknown>; order: number },
-) {
+): Promise<typeof schema.checklistItemRequirements.$inferSelect> {
   const rows = await tx
     .insert(schema.checklistItemRequirements)
     .values({
@@ -52,7 +52,7 @@ export async function insertRequirement(
   return rows[0]!;
 }
 
-export async function getTemplate(tx: Tx, tenantId: string, id: string) {
+export async function getTemplate(tx: Tx, tenantId: string, id: string): Promise<typeof schema.checklistTemplates.$inferSelect | undefined> {
   const rows = await tx
     .select()
     .from(schema.checklistTemplates)
@@ -61,7 +61,7 @@ export async function getTemplate(tx: Tx, tenantId: string, id: string) {
   return rows[0];
 }
 
-export async function listItems(tx: Tx, templateId: string) {
+export async function listItems(tx: Tx, templateId: string): Promise<(typeof schema.checklistItems.$inferSelect)[]> {
   return tx
     .select()
     .from(schema.checklistItems)
@@ -69,7 +69,7 @@ export async function listItems(tx: Tx, templateId: string) {
     .orderBy(asc(schema.checklistItems.order));
 }
 
-export async function listRequirements(tx: Tx, checklistItemId: string) {
+export async function listRequirements(tx: Tx, checklistItemId: string): Promise<(typeof schema.checklistItemRequirements.$inferSelect)[]> {
   return tx
     .select()
     .from(schema.checklistItemRequirements)
@@ -77,7 +77,7 @@ export async function listRequirements(tx: Tx, checklistItemId: string) {
     .orderBy(asc(schema.checklistItemRequirements.order));
 }
 
-export async function listTemplates(tx: Tx, cursor: string | undefined, limit: number) {
+export async function listTemplates(tx: Tx, cursor: string | undefined, limit: number): Promise<(typeof schema.checklistTemplates.$inferSelect)[]> {
   const where = cursor
     ? and(eq(schema.checklistTemplates.active, true), gt(schema.checklistTemplates.id, cursor))
     : eq(schema.checklistTemplates.active, true);
@@ -94,7 +94,7 @@ export async function updateItem(
   tenantId: string,
   id: string,
   data: Partial<{ label: string; description: string; order: number }>,
-) {
+): Promise<typeof schema.checklistItems.$inferSelect | undefined> {
   const rows = await tx
     .update(schema.checklistItems)
     .set(data)
@@ -103,7 +103,7 @@ export async function updateItem(
   return rows[0];
 }
 
-export async function deleteRequirement(tx: Tx, itemId: string, requirementId: string) {
+export async function deleteRequirement(tx: Tx, itemId: string, requirementId: string): Promise<typeof schema.checklistItemRequirements.$inferSelect | undefined> {
   const rows = await tx
     .delete(schema.checklistItemRequirements)
     .where(

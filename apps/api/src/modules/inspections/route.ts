@@ -10,7 +10,7 @@ import {
   pageSchema,
 } from "@vistoria/contracts";
 import { requireRole } from "../../core/auth/require-role.js";
-import { errors } from "../../core/errors/app-error.js";
+import { requireTenant } from "../../core/auth/require-tenant.js";
 import * as service from "./service.js";
 
 const idParams = z.object({ id: z.string().uuid() });
@@ -31,8 +31,8 @@ export async function inspectionRoutes(app: FastifyInstance): Promise<void> {
     "/inspections",
     { preHandler: manage, schema: { body: createInspectionInput, response: { 201: inspectionDto } } },
     async (request, reply) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
-      const dto = await service.create(request.tx, request.ctx.tenantId, request.body);
+      const tenantId = requireTenant(request);
+      const dto = await service.create(request.tx, tenantId, request.body);
       reply.status(201).send(dto);
     },
   );
@@ -41,11 +41,11 @@ export async function inspectionRoutes(app: FastifyInstance): Promise<void> {
     "/inspections",
     { preHandler: manage, schema: { querystring: listQuery, response: { 200: pageSchema(inspectionDto) } } },
     async (request) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
+      const tenantId = requireTenant(request);
       const q = request.query;
       return service.list(
         request.tx,
-        request.ctx.tenantId,
+        tenantId,
         {
           status: q.status,
           inspectorId: q.inspector,
@@ -62,8 +62,8 @@ export async function inspectionRoutes(app: FastifyInstance): Promise<void> {
     "/inspections/:id",
     { preHandler: execute, schema: { params: idParams, response: { 200: inspectionDto } } },
     async (request) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
-      return service.getById(request.tx, request.ctx.tenantId, request.params.id);
+      const tenantId = requireTenant(request);
+      return service.getById(request.tx, tenantId, request.params.id);
     },
   );
 
@@ -84,8 +84,8 @@ export async function inspectionRoutes(app: FastifyInstance): Promise<void> {
       },
     },
     async (request) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
-      return service.getAudit(request.tx, request.ctx.tenantId, request.params.id);
+      const tenantId = requireTenant(request);
+      return service.getAudit(request.tx, tenantId, request.params.id);
     },
   );
 
@@ -93,8 +93,8 @@ export async function inspectionRoutes(app: FastifyInstance): Promise<void> {
     "/inspections/:id/audit",
     { preHandler: manage, schema: { params: idParams, body: auditInput, response: { 200: inspectionDto } } },
     async (request) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
-      return service.audit(request.tx, request.ctx.tenantId, request.params.id, request.ctx.userId, request.body);
+      const tenantId = requireTenant(request);
+      return service.audit(request.tx, tenantId, request.params.id, request.ctx.userId, request.body);
     },
   );
 
@@ -102,8 +102,8 @@ export async function inspectionRoutes(app: FastifyInstance): Promise<void> {
     "/inspections/:id/start",
     { preHandler: execute, schema: { params: idParams, response: { 200: inspectionDto } } },
     async (request) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
-      return service.start(request.tx, request.ctx.tenantId, request.params.id);
+      const tenantId = requireTenant(request);
+      return service.start(request.tx, tenantId, request.params.id);
     },
   );
 
@@ -111,8 +111,8 @@ export async function inspectionRoutes(app: FastifyInstance): Promise<void> {
     "/inspections/:id/items",
     { preHandler: execute, schema: { params: idParams, response: { 200: z.array(inspectionItemDto) } } },
     async (request) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
-      return service.items(request.tx, request.ctx.tenantId, request.params.id);
+      const tenantId = requireTenant(request);
+      return service.items(request.tx, tenantId, request.params.id);
     },
   );
 
@@ -127,8 +127,8 @@ export async function inspectionRoutes(app: FastifyInstance): Promise<void> {
       },
     },
     async (request) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
-      return service.finish(request.tx, request.ctx.tenantId, request.params.id, request.body);
+      const tenantId = requireTenant(request);
+      return service.finish(request.tx, tenantId, request.params.id, request.body);
     },
   );
 
@@ -142,8 +142,8 @@ export async function inspectionRoutes(app: FastifyInstance): Promise<void> {
       },
     },
     async (request) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
-      return service.myToday(request.tx, request.ctx.tenantId, request.ctx.userId);
+      const tenantId = requireTenant(request);
+      return service.myToday(request.tx, request.ctx.userId);
     },
   );
 
@@ -151,8 +151,8 @@ export async function inspectionRoutes(app: FastifyInstance): Promise<void> {
     "/me/inspections/history",
     { preHandler: execute, schema: { querystring: paginationQuerySchema, response: { 200: pageSchema(inspectionDto) } } },
     async (request) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
-      return service.myHistory(request.tx, request.ctx.tenantId, request.ctx.userId, request.query);
+      const tenantId = requireTenant(request);
+      return service.myHistory(request.tx, tenantId, request.ctx.userId, request.query);
     },
   );
 }

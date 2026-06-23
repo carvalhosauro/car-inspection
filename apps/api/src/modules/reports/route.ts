@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { requireRole } from "../../core/auth/require-role.js";
-import { errors } from "../../core/errors/app-error.js";
+import { requireTenant } from "../../core/auth/require-tenant.js";
 import * as service from "./service.js";
 
 export async function reportRoutes(app: FastifyInstance): Promise<void> {
@@ -15,13 +15,18 @@ export async function reportRoutes(app: FastifyInstance): Promise<void> {
       preHandler: guard,
       schema: {
         response: {
-          200: z.object({ byStatus: z.record(z.number()), total: z.number() }),
+          200: z.object({
+            inspections: z.number(),
+            pending: z.number(),
+            approved: z.number(),
+            rejected: z.number(),
+          }),
         },
       },
     },
     async (request) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
-      return service.summary(request.tx, request.ctx.tenantId);
+      const tenantId = requireTenant(request);
+      return service.summary(request.tx, tenantId);
     },
   );
 
@@ -38,8 +43,8 @@ export async function reportRoutes(app: FastifyInstance): Promise<void> {
       },
     },
     async (request) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
-      return service.damages(request.tx, request.ctx.tenantId);
+      const tenantId = requireTenant(request);
+      return service.damages(request.tx, tenantId);
     },
   );
 
@@ -56,8 +61,8 @@ export async function reportRoutes(app: FastifyInstance): Promise<void> {
       },
     },
     async (request) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
-      return service.pending(request.tx, request.ctx.tenantId);
+      const tenantId = requireTenant(request);
+      return service.pending(request.tx, tenantId);
     },
   );
 
@@ -68,8 +73,8 @@ export async function reportRoutes(app: FastifyInstance): Promise<void> {
       schema: { response: { 200: z.object({ avgSeconds: z.number().nullable() }) } },
     },
     async (request) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
-      return service.avgTime(request.tx, request.ctx.tenantId);
+      const tenantId = requireTenant(request);
+      return service.avgTime(request.tx, tenantId);
     },
   );
 }

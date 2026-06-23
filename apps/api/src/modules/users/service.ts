@@ -7,6 +7,8 @@ import type {
 import type { Tx } from "../../core/auth/types.js";
 import { hashPassword } from "../../core/auth/password.js";
 import { errors } from "../../core/errors/app-error.js";
+import { isUniqueViolation } from "../../core/db/errors.js";
+import { buildPage } from "../../core/utils/pagination.js";
 import { insertUser, listUsers, updateUser } from "./repo.js";
 
 type Row = {
@@ -45,8 +47,9 @@ export async function create(
       role: input.role,
     });
     return toDto(row as Row);
-  } catch (e) {
-    throw errors.conflict("Email already in use", { cause: (e as Error).message });
+  } catch (err: unknown) {
+    if (isUniqueViolation(err)) throw errors.conflict("Email already in use");
+    throw err;
   }
 }
 
@@ -56,12 +59,7 @@ export async function list(
   query: PaginationQuery,
 ): Promise<{ items: UserDto[]; nextCursor: string | null }> {
   const rows = await listUsers(tx, tenantId, query.cursor, query.limit);
-  const hasMore = rows.length > query.limit;
-  const page = hasMore ? rows.slice(0, query.limit) : rows;
-  return {
-    items: page.map((r) => toDto(r as Row)),
-    nextCursor: hasMore ? page[page.length - 1]!.id : null,
-  };
+  return buildPage(rows, query.limit, (r) => toDto(r as Row));
 }
 
 export async function update(

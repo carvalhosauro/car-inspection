@@ -1,15 +1,13 @@
 import type { ProofHandler } from "../registry.js";
 import { annotateText } from "../vision.js";
+import { guardBytes, callAnnotateText } from "./shared.js";
 
 export const ocrKmHandler: ProofHandler = async ({ bytes, ctx }) => {
-  if (!bytes) return { accepted: null, validation: { reason: "pendente: sem bytes" } };
-  let text: string | null;
-  try {
-    text = await annotateText(bytes);
-  } catch {
-    return { accepted: null, validation: { reason: "pendente: vision indisponivel" } };
-  }
-  if (!text) return { accepted: null, validation: { reason: "pendente: sem texto detectado" } };
+  const bytesGuard = guardBytes(bytes)
+  if (bytesGuard) return bytesGuard
+  const result = await callAnnotateText(bytes!, annotateText)
+  if ('pending' in result) return result.pending
+  const { text } = result
   const digits = text.replace(/[^0-9]/g, "");
   if (!digits) {
     return { accepted: false, validation: { reason: "km não detectado", rawText: text } };

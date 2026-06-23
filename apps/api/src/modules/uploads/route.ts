@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { requireRole } from "../../core/auth/require-role.js";
-import { errors } from "../../core/errors/app-error.js";
+import { requireTenant } from "../../core/auth/require-tenant.js";
 import * as service from "./service.js";
 
 export async function uploadRoutes(app: FastifyInstance): Promise<void> {
@@ -24,8 +24,8 @@ export async function uploadRoutes(app: FastifyInstance): Promise<void> {
       },
     },
     async (request, reply) => {
-      if (request.ctx.tenantId === null) throw errors.badRequest("Must belong to a tenant");
-      const out = await service.sign(request.ctx.tenantId, request.body.contentType);
+      const tenantId = requireTenant(request);
+      const out = await service.sign(tenantId, request.body.contentType);
       reply.status(201).send(out);
     },
   );

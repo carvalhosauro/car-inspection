@@ -1,7 +1,7 @@
-import { useEffect, useState, type FC } from "react";
+import { type FC } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { colors, spacing } from "../../tokens";
-import type { UniqueCodeProps } from "./UniqueCode.logic";
+import { useCopied, type UniqueCodeProps } from "./UniqueCode.logic";
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -28,13 +28,7 @@ const styles = StyleSheet.create({
 });
 
 export const UniqueCode: FC<UniqueCodeProps> = ({ code, onCopied }) => {
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    if (!copied) return;
-    const timer = setTimeout(() => setCopied(false), 1500);
-    return () => clearTimeout(timer);
-  }, [copied]);
+  const [copied, setCopied] = useCopied();
 
   const copy = () => {
     setCopied(true);

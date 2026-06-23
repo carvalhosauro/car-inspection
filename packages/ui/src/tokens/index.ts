@@ -9,6 +9,11 @@ export const colors = {
   neutral50: "#F8FAFC",
   neutral300: "#CBD5E1",
   neutral600: "#334155",
+  successBg: "#DCFCE7",
+  primaryBg: "#DBEAFE",
+  warningBg: "#FEF3C7",
+  errorBg: "#FEE2E2",
+  neutralBg: "#F1F5F9",
 } as const;
 
 export const typography = {
@@ -20,6 +25,7 @@ export const typography = {
 } as const;
 
 export const spacing = {
+  xxs: 2,
   xs: 4,
   sm: 8,
   md: 16,
@@ -29,6 +35,20 @@ export const spacing = {
   "3xl": 64,
 } as const;
 
+export const borderRadius = {
+  pill: 9999,
+  button: 8,
+  card: 12,
+  image: 8,
+} as const;
+
+export const size = {
+  vehicleImageHeight: 140,
+  progressTrackHeight: 8,
+} as const;
+
 export type ColorToken = keyof typeof colors;
 export type TypographyToken = keyof typeof typography;
 export type SpacingToken = keyof typeof spacing;
+export type BorderRadiusToken = keyof typeof borderRadius;
+export type SizeToken = keyof typeof size;

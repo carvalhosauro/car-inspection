@@ -1,8 +1,8 @@
 import type { FC } from "react";
-import { resolveButtonState, type ButtonProps } from "./Button.logic";
+import { resolveButtonState, type ButtonProps, type ButtonVariant } from "./Button.logic";
 import styles from "./Button.module.css";
 
-const variantClass: Record<string, string | undefined> = {
+const variantClass: Record<ButtonVariant, string | undefined> = {
   primary: styles.primary,
   secondary: styles.secondary,
   success: styles.success,

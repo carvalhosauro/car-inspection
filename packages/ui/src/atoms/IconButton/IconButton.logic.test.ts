@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ICON_GLYPH } from "./IconButton.logic";
+import { ICON_BUTTON_GLYPHS as ICON_GLYPH } from "../../native-glyphs";
 
 describe("ICON_GLYPH", () => {
   it("covers all six icon names", () => {

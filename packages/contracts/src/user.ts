@@ -1,5 +1,8 @@
 import { z } from "zod";
 import { USER_ROLES } from "./enums";
+import { passwordSchema } from "./auth";
+
+const ASSIGNABLE_ROLES = ["supervisor", "vistoriador"] as const;
 
 export const userDto = z.object({
   id: z.string().uuid(),
@@ -15,8 +18,8 @@ export type UserDto = z.infer<typeof userDto>;
 export const createUserInput = z.object({
   name: z.string().min(1),
   email: z.string().email(),
-  password: z.string().min(6),
-  role: z.enum(["supervisor", "vistoriador"]),
+  password: passwordSchema,
+  role: z.enum(ASSIGNABLE_ROLES),
 });
 export type CreateUserInput = z.infer<typeof createUserInput>;
 

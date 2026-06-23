@@ -6,14 +6,13 @@ import styles from "./GeoTag.module.css";
 const ICONS = { pending: Loader2, acquired: MapPin, error: AlertCircle } as const;
 
 export const GeoTag: FC<GeoTagProps> = ({ lat, lng, status = 'pending', address }) => {
-  const resolvedStatus = status ?? 'pending';
-  const cfg = GEO_STATUS_CONFIG[resolvedStatus];
-  const Icon = ICONS[resolvedStatus];
+  const cfg = GEO_STATUS_CONFIG[status];
+  const Icon = ICONS[status];
 
   return (
     <span className={styles.tag}>
       <Icon
-        className={resolvedStatus === 'pending' ? styles.spin : styles.pin}
+        className={status === 'pending' ? styles.spin : styles.pin}
         size={16}
         aria-hidden="true"
         style={{ color: cfg.colorVar }}

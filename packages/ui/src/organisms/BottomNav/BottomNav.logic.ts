@@ -1,5 +1,7 @@
+export type TabId = "inicio" | "vistorias" | "camera" | "alertas" | "perfil";
+
 export interface Tab {
-  id: string;
+  id: TabId;
   label: string;
   center?: boolean;
 }
@@ -18,7 +20,9 @@ export interface BottomNavProps {
   onTab?: (id: string) => void;
 }
 
+const BADGE_MAX_COUNT = 9;
+
 export function formatBadge(count: number): string | null {
   if (count <= 0) return null;
-  return count > 9 ? "9+" : String(count);
+  return count > BADGE_MAX_COUNT ? `${BADGE_MAX_COUNT}+` : String(count);
 }

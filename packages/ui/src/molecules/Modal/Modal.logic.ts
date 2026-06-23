@@ -14,12 +14,12 @@ export interface ModalProps {
   children?: ReactNode;
 }
 
-export function resolveModalLabels(p: {
+export function resolveModalLabels(labels: {
   confirmLabel?: string;
   cancelLabel?: string;
 }): { confirm: string; cancel: string } {
   return {
-    confirm: p.confirmLabel ?? "Confirmar",
-    cancel: p.cancelLabel ?? "Cancelar"
+    confirm: labels.confirmLabel ?? "Confirmar",
+    cancel: labels.cancelLabel ?? "Cancelar"
   };
 }

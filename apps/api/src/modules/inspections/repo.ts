@@ -1,6 +1,11 @@
 import { and, asc, desc, eq, gt, lt } from "drizzle-orm";
 import { schema, newId } from "@vistoria/db";
 import type { Tx } from "../../core/auth/types.js";
+import { INSPECTION_STATUS, ITEM_STATUS } from "../../core/constants/status.js";
+
+type InspectionInsert = typeof schema.inspections.$inferInsert;
+type InspectionType = InspectionInsert["type"];
+type InspectionStatusValue = typeof schema.inspections.$inferSelect["status"];
 
 export async function getVehicle(tx: Tx, id: string) {
   const rows = await tx.select().from(schema.vehicles).where(eq(schema.vehicles.id, id)).limit(1);
@@ -39,7 +44,7 @@ export async function insertInspection(
     vehicleId: string;
     inspectorId: string;
     templateId: string;
-    type: string;
+    type: InspectionType;
     scheduledFor?: Date | null;
   },
 ) {
@@ -51,8 +56,8 @@ export async function insertInspection(
       vehicleId: data.vehicleId,
       inspectorId: data.inspectorId,
       templateId: data.templateId,
-      type: data.type as never,
-      status: "atribuida",
+      type: data.type,
+      status: INSPECTION_STATUS.atribuida,
       scheduledFor: data.scheduledFor ?? null,
     })
     .returning();
@@ -80,7 +85,7 @@ export async function insertInspectionItem(
       order: data.order,
       labelSnapshot: data.labelSnapshot,
       requirementsSnapshot: data.requirementsSnapshot,
-      status: "pendente",
+      status: ITEM_STATUS.pendente,
     })
     .returning();
   return rows[0]!;
@@ -115,7 +120,7 @@ export async function updateInspection(
   tx: Tx,
   tenantId: string,
   id: string,
-  data: Record<string, unknown>,
+  data: Partial<InspectionInsert>,
 ) {
   const rows = await tx
     .update(schema.inspections)
@@ -126,6 +131,8 @@ export async function updateInspection(
 }
 
 export interface InspectionFilter {
+  // status accepts a plain string because the route querystring is validated as
+  // z.string(); cast at the use-site below to the inspection-status enum.
   status?: string;
   inspectorId?: string;
   vehicleId?: string;
@@ -141,7 +148,7 @@ export async function listInspections(
   limit: number,
 ) {
   const conds = [eq(schema.inspections.tenantId, tenantId)];
-  if (filter.status) conds.push(eq(schema.inspections.status, filter.status as never));
+  if (filter.status) conds.push(eq(schema.inspections.status, filter.status as InspectionStatusValue));
   if (filter.inspectorId) conds.push(eq(schema.inspections.inspectorId, filter.inspectorId));
   if (filter.vehicleId) conds.push(eq(schema.inspections.vehicleId, filter.vehicleId));
   if (filter.from) conds.push(gt(schema.inspections.createdAt, filter.from));

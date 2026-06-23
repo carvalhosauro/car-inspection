@@ -38,11 +38,8 @@ describe("vision", () => {
     expect(out).toBeNull();
   });
 
-  it("annotatePhoto returns safe defaults when Vision API throws", async () => {
+  it("annotatePhoto propagates Vision API errors to the caller", async () => {
     annotateImage.mockRejectedValueOnce(new Error("Vision API error"));
-    const out = await annotatePhoto(Buffer.from([1]));
-    expect(out.labels).toEqual([]);
-    expect(out.objects).toEqual([]);
-    expect(out.safeSearch).toEqual({ adult: "UNKNOWN", violence: "UNKNOWN", racy: "UNKNOWN" });
+    await expect(annotatePhoto(Buffer.from([1]))).rejects.toThrow("Vision API error");
   });
 });

@@ -8,6 +8,7 @@ import type {
 } from "@vistoria/contracts";
 import type { Tx } from "../../core/auth/types.js";
 import { errors } from "../../core/errors/app-error.js";
+import { buildPage } from "../../core/utils/pagination.js";
 import {
   insertTemplate,
   insertItem,
@@ -69,6 +70,34 @@ async function templateToDto(
   };
 }
 
+async function insertItemWithRequirements(
+  tx: Tx,
+  tenantId: string,
+  templateId: string,
+  item: {
+    label: string;
+    description?: string | null;
+    order: number;
+    requirements: CreateChecklistTemplateInput["items"][number]["requirements"];
+  },
+): Promise<Awaited<ReturnType<typeof insertItem>>> {
+  const itemRow = await insertItem(tx, tenantId, templateId, {
+    label: item.label,
+    description: item.description ?? undefined,
+    order: item.order,
+  });
+  // TODO: could parallelize if order is not required
+  for (const req of item.requirements) {
+    await insertRequirement(tx, tenantId, itemRow.id, {
+      kind: req.kind,
+      required: req.required,
+      config: req.config,
+      order: req.order,
+    });
+  }
+  return itemRow;
+}
+
 export async function createTemplate(
   tx: Tx,
   tenantId: string,
@@ -76,19 +105,7 @@ export async function createTemplate(
 ): Promise<ChecklistTemplateDto> {
   const template = await insertTemplate(tx, tenantId, input.name);
   for (const item of input.items) {
-    const itemRow = await insertItem(tx, tenantId, template.id, {
-      label: item.label,
-      description: item.description,
-      order: item.order,
-    });
-    for (const req of item.requirements) {
-      await insertRequirement(tx, tenantId, itemRow.id, {
-        kind: req.kind,
-        required: req.required,
-        config: req.config,
-        order: req.order,
-      });
-    }
+    await insertItemWithRequirements(tx, tenantId, template.id, item);
   }
   return templateToDto(tx, template);
 }
@@ -104,10 +121,9 @@ export async function listTemplates(
   query: PaginationQuery,
 ): Promise<{ items: ChecklistTemplateDto[]; nextCursor: string | null }> {
   const rows = await listTemplatesRepo(tx, query.cursor, query.limit);
-  const hasMore = rows.length > query.limit;
-  const page = hasMore ? rows.slice(0, query.limit) : rows;
+  const { items: page, nextCursor } = buildPage(rows, query.limit, (r) => r);
   const items = await Promise.all(page.map((row) => templateToDto(tx, row)));
-  return { items, nextCursor: hasMore ? page[page.length - 1]!.id : null };
+  return { items, nextCursor };
 }
 
 export async function addItem(
@@ -123,19 +139,7 @@ export async function addItem(
 ): Promise<ChecklistItemDto> {
   const template = await getTemplate(tx, tenantId, templateId);
   if (!template) throw errors.notFound("Template not found");
-  const itemRow = await insertItem(tx, tenantId, templateId, {
-    label: input.label,
-    description: input.description,
-    order: input.order,
-  });
-  for (const req of input.requirements) {
-    await insertRequirement(tx, tenantId, itemRow.id, {
-      kind: req.kind,
-      required: req.required,
-      config: req.config,
-      order: req.order,
-    });
-  }
+  const itemRow = await insertItemWithRequirements(tx, tenantId, templateId, input);
   return itemToDto(tx, itemRow);
 }
 

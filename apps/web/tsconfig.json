@@ -1,0 +1,17 @@
+{
+  "extends": "@vistoria/config/tsconfig",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "preserve",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "composite": false,
+    "incremental": true,
+    "allowJs": true,
+    "plugins": [{ "name": "next" }],
+    "paths": { "@/*": ["./src/*"] }
+  },
+  "include": ["next-env.d.ts", "src", ".next/types/**/*.ts", "vitest.config.ts", "vitest.setup.ts"],
+  "exclude": ["node_modules"]
+}

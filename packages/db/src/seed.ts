@@ -2,6 +2,12 @@ import argon2 from "argon2";
 import { db, schema } from "./index";
 import { newId } from "./id";
 
+/**
+ * Populates the database with a demo tenant, users, a vehicle, and a checklist template.
+ * Precondition: run migrations first (`pnpm db:migrate`).
+ * Destructive — always inserts; re-running on a seeded DB will fail on unique constraints.
+ * Invoke with: `pnpm db:seed`
+ */
 async function main() {
   const tenantId = newId();
   await db.insert(schema.tenants).values({

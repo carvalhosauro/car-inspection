@@ -15,5 +15,14 @@ declare module "fastify" {
   interface FastifyRequest {
     ctx: RequestCtx;
     tx: Tx;
+    _pendingTx?: PendingTx;
   }
+}
+
+// Forward declaration so the augmentation above can reference PendingTx.
+export interface PendingTx {
+  tx: Tx;
+  commit: () => void;
+  rollback: (err: unknown) => void;
+  done: Promise<void>;
 }

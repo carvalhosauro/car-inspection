@@ -1,5 +1,15 @@
+export type NavLinkId =
+  | "dashboard"
+  | "frota"
+  | "checklist"
+  | "vistorias"
+  | "auditoria"
+  | "relatorios"
+  | "configuracoes"
+  | "usuarios";
+
 export interface NavLink {
-  id: string;
+  id: NavLinkId;
   label: string;
 }
 
@@ -21,6 +31,6 @@ export interface SidebarProps {
   onNavigate?: (id: string) => void;
 }
 
-export function isActive(linkId: string, activeId: string): boolean {
+export function isActive(linkId: NavLinkId, activeId: string): boolean {
   return linkId === activeId;
 }

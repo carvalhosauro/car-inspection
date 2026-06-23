@@ -1,5 +1,5 @@
 import { useRef, useState, type FC, type DragEvent, type ChangeEvent } from "react";
-import { validateFile, type UploadAreaProps, type UploadState } from "./UploadArea.logic";
+import { validateFile, MAX_BYTES, ACCEPTED, type UploadAreaProps, type UploadState } from "./UploadArea.logic";
 import styles from "./UploadArea.module.css";
 
 export const UploadArea: FC<UploadAreaProps> = ({ state: controlled, onFiles }) => {
@@ -38,12 +38,12 @@ export const UploadArea: FC<UploadAreaProps> = ({ state: controlled, onFiles }) 
       onDrop={onDrop}
     >
       <span>Arraste a imagem ou clique para selecionar</span>
-      <small>PNG ou JPG até 10MB</small>
+      <small>PNG ou JPG até {`${MAX_BYTES / (1024 * 1024)}MB`}</small>
       <input
         ref={inputRef}
         className={styles.hidden}
         type="file"
-        accept="image/png,image/jpeg"
+        accept={ACCEPTED.join(",")}
         onChange={onChange}
       />
     </div>

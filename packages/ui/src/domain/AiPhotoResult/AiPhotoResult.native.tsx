@@ -1,12 +1,8 @@
 import type { FC } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { colors, spacing } from "../../tokens";
-import { AI_CONFIG, type AiIcon, type AiPhotoResultProps } from "./AiPhotoResult.logic";
-
-const ICON_GLYPH: Record<AiIcon, string> = {
-  CheckCircle2: "✓",
-  XCircle: "✕",
-};
+import { AI_CONFIG, type AiPhotoResultProps } from "./AiPhotoResult.logic";
+import { AI_PHOTO_GLYPHS } from "../../native-glyphs";
 
 const styles = StyleSheet.create({
   box: { gap: spacing.xs, borderRadius: 12, padding: spacing.md, borderWidth: 1, borderColor: colors.neutral300 },
@@ -21,7 +17,7 @@ export const AiPhotoResult: FC<AiPhotoResultProps> = ({ verdict, reason }) => {
   return (
     <View style={styles.box}>
       <View style={styles.header}>
-        <Text style={[styles.icon, { color: cfg.color }]}>{ICON_GLYPH[cfg.icon]}</Text>
+        <Text style={[styles.icon, { color: cfg.color }]}>{AI_PHOTO_GLYPHS[cfg.icon]}</Text>
         <Text style={styles.message}>{cfg.message}</Text>
       </View>
       {verdict === "recusada" && reason ? <Text style={styles.reason}>{reason}</Text> : null}

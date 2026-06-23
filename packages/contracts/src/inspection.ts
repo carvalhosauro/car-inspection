@@ -72,8 +72,10 @@ export const createEvidenceInput = z.object({
 });
 export type CreateEvidenceInput = z.infer<typeof createEvidenceInput>;
 
+const AUDIT_DECISIONS = ["aprovada", "reprovada"] as const;
+
 export const auditInput = z.object({
-  decision: z.enum(["aprovada", "reprovada"]),
+  decision: z.enum(AUDIT_DECISIONS),
   auditNote: z.string().optional(),
 });
 export type AuditInput = z.infer<typeof auditInput>;

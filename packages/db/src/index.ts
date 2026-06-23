@@ -5,10 +5,12 @@ import type { UserRole } from "@vistoria/contracts";
 import * as schema from "./schema";
 export { newId } from "./id";
 
-const queryClient = new Pool({ connectionString: process.env.DATABASE_URL!, max: 10 });
+const DB_POOL_MAX = parseInt(process.env.DB_POOL_MAX ?? "10", 10)
+const queryClient = new Pool({ connectionString: process.env.DATABASE_URL!, max: DB_POOL_MAX });
 export const db = drizzle(queryClient, { schema });
 export { schema };
 export type Database = typeof db;
+export type DrizzleTx = Parameters<Parameters<Database["transaction"]>[0]>[0]
 
 export interface TenantContext {
   tenantId: string | null;
@@ -21,7 +23,7 @@ export interface TenantContext {
  */
 export async function txWithTenant<T>(
   ctx: TenantContext,
-  fn: (tx: Parameters<Parameters<Database["transaction"]>[0]>[0]) => Promise<T>,
+  fn: (tx: DrizzleTx) => Promise<T>,
 ): Promise<T> {
   return db.transaction(async (tx) => {
     await tx.execute(sql`SELECT set_config('app.tenant_id', ${ctx.tenantId ?? ""}, true)`);

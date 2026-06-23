@@ -1,7 +1,8 @@
 import type { FC } from "react";
 import { Pressable, Text, StyleSheet } from "react-native";
 import { colors } from "../../tokens";
-import { ICON_GLYPH, type IconButtonProps } from "./IconButton.logic";
+import { type IconButtonProps } from "./IconButton.logic";
+import { ICON_BUTTON_GLYPHS } from "../../native-glyphs";
 
 const styles = StyleSheet.create({
   button: {
@@ -23,6 +24,6 @@ export const IconButton: FC<IconButtonProps> = ({ icon, ariaLabel, ghost, onPres
     onPress={onPress}
     style={[styles.button, ghost ? styles.ghost : null]}
   >
-    <Text style={styles.glyph}>{ICON_GLYPH[icon]}</Text>
+    <Text style={styles.glyph}>{ICON_BUTTON_GLYPHS[icon]}</Text>
   </Pressable>
 );
