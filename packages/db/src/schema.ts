@@ -7,6 +7,10 @@ import {
 } from "@vistoria/contracts";
 import { newId } from "./id";
 
+const DEFAULT_VEHICLE_STATUS = "disponivel"
+const DEFAULT_INSPECTION_STATUS = "atribuida"
+const DEFAULT_ITEM_STATUS = "pendente"
+
 export const userRole = pgEnum("user_role", USER_ROLES);
 export const vehicleStatus = pgEnum("vehicle_status", VEHICLE_STATUSES);
 export const inspectionType = pgEnum("inspection_type", INSPECTION_TYPES);
@@ -44,7 +48,7 @@ export const vehicles = pgTable("vehicles", {
   year: integer("year"),
   color: text("color"),
   currentKm: integer("current_km").notNull().default(0),
-  status: vehicleStatus("status").notNull().default("disponivel"),
+  status: vehicleStatus("status").notNull().default(DEFAULT_VEHICLE_STATUS),
   createdAt: createdAt(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
@@ -83,7 +87,7 @@ export const inspections = pgTable("inspections", {
   inspectorId: uuid("inspector_id").notNull().references(() => users.id),
   templateId: uuid("template_id").notNull().references(() => checklistTemplates.id),
   type: inspectionType("type").notNull(),
-  status: inspectionStatus("status").notNull().default("atribuida"),
+  status: inspectionStatus("status").notNull().default(DEFAULT_INSPECTION_STATUS),
   result: inspectionResult("result"),
   scheduledFor: timestamp("scheduled_for", { withTimezone: true }),
   startedAt: timestamp("started_at", { withTimezone: true }),
@@ -106,7 +110,7 @@ export const inspectionItems = pgTable("inspection_items", {
   order: integer("order").notNull().default(0),
   labelSnapshot: text("label_snapshot").notNull(),
   requirementsSnapshot: jsonb("requirements_snapshot").notNull(),
-  status: itemStatus("status").notNull().default("pendente"),
+  status: itemStatus("status").notNull().default(DEFAULT_ITEM_STATUS),
   justification: text("justification"),
   createdAt: createdAt(),
 });
