@@ -27,6 +27,18 @@ export function InspectionsList({ initial, role }: { initial: InspectionDto[]; r
     placeholderData: { items: initial, nextCursor: null },
   });
 
+  const vehiclesQ = useQuery({
+    queryKey: ["vehicles", "lookup"],
+    queryFn: () => api.base.vehicles.list(),
+  });
+  const inspectorsQ = useQuery({
+    queryKey: ["inspectors", "lookup"],
+    queryFn: () => api.inspectors.list(),
+  });
+
+  const vehicleMap = new Map((vehiclesQ.data?.items ?? []).map((v) => [v.id, v]));
+  const inspectorMap = new Map((inspectorsQ.data?.items ?? []).map((u) => [u.id, u]));
+
   const createMut = useMutation({
     mutationFn: (input: CreateInspectionInput) => api.base.inspections.create(input),
     onSuccess: () => {
@@ -73,14 +85,32 @@ export function InspectionsList({ initial, role }: { initial: InspectionDto[]; r
             {items.length === 0 && (
               <TableEmpty colSpan={6}>Nenhuma vistoria encontrada com os filtros atuais.</TableEmpty>
             )}
-            {items.map((i) => (
+            {items.map((i) => {
+              const vehicle = vehicleMap.get(i.vehicleId);
+              const inspector = inspectorMap.get(i.inspectorId);
+              return (
               <TR key={i.id}>
                 <TD>{formatInspectionType(i.type)}</TD>
                 <TD>
                   <StatusChip status={i.status}>{formatInspectionStatus(i.status)}</StatusChip>
                 </TD>
-                <TD className="font-mono text-xs text-muted-foreground">{i.vehicleId}</TD>
-                <TD className="font-mono text-xs text-muted-foreground">{i.inspectorId}</TD>
+                <TD>
+                  {vehicle ? (
+                    <span>
+                      <span className="font-mono font-medium">{vehicle.plate}</span>
+                      <span className="text-muted-foreground"> · {vehicle.model}</span>
+                    </span>
+                  ) : (
+                    <span className="font-mono text-xs text-muted-foreground">{i.vehicleId}</span>
+                  )}
+                </TD>
+                <TD>
+                  {inspector ? (
+                    inspector.name
+                  ) : (
+                    <span className="font-mono text-xs text-muted-foreground">{i.inspectorId}</span>
+                  )}
+                </TD>
                 <TD className="text-muted-foreground">{formatDate(i.createdAt)}</TD>
                 <TD className="text-right">
                   <Link
@@ -91,7 +121,8 @@ export function InspectionsList({ initial, role }: { initial: InspectionDto[]; r
                   </Link>
                 </TD>
               </TR>
-            ))}
+              );
+            })}
           </TBody>
         </Table>
       </TableContainer>
