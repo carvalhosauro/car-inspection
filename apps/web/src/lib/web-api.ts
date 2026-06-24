@@ -114,6 +114,9 @@ export interface WebApi {
     laudo: (id: string) => Promise<LaudoInspection>;
     audit: (id: string, body: AuditInput) => Promise<InspectionDto>;
   };
+  inspectors: {
+    list: () => Promise<{ items: UserDto[] }>;
+  };
   users: {
     list: () => Promise<{ items: UserDto[]; nextCursor: string | null }>;
     create: (body: CreateUserInput) => Promise<UserDto>;
@@ -150,6 +153,9 @@ export function createWebApi(baseUrl: string, getToken: TokenGetter): WebApi {
         ),
       laudo: (id) => c<LaudoInspection>("GET", `/v1/inspections/${id}`),
       audit: (id, body) => c<InspectionDto>("PATCH", `/v1/inspections/${id}/audit`, body),
+    },
+    inspectors: {
+      list: () => c<{ items: UserDto[] }>("GET", "/v1/inspectors"),
     },
     users: {
       list: () => c<{ items: UserDto[]; nextCursor: string | null }>("GET", "/v1/users"),

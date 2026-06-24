@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "CI=true pnpm install --frozen-lockfile",
+  "buildCommand": "CI=true turbo run build --filter=@vistoria/web",
+  "build": {
+    "env": {
+      "CI": "true",
+      "TURBO_FORCE": "true"
+    }
+  }
+}

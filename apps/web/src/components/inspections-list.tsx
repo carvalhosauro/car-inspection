@@ -2,23 +2,59 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
-import type { InspectionDto } from "@vistoria/contracts";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type {
+  CreateInspectionInput,
+  InspectionDto,
+  UserRole,
+  VehicleDto,
+  ChecklistTemplateDto,
+  UserDto,
+} from "@vistoria/contracts";
 import { browserApi } from "@/lib/api-browser";
-import { formatDate, formatInspectionStatus } from "@/lib/format";
+import { can } from "@/lib/rbac";
+import { formatDate, formatInspectionStatus, formatInspectionType } from "@/lib/format";
+import { Button } from "@vistoria/ui/atoms/Button";
 import { InspectionFilters, type FiltersState } from "@/components/inspection-filters";
+import { InspectionFormDialog } from "@/components/inspection-form-dialog";
 import { Table, THead, TBody, TR, TH, TD, TableContainer, TableEmpty } from "@/components/ui/table";
 import { StatusChip } from "@/components/ui/status-chip";
 import { PageHeader } from "@/components/ui/page-header";
 
-export function InspectionsList({ initial }: { initial: InspectionDto[] }) {
+export function InspectionsList({
+  initial,
+  role,
+  vehicles = [],
+  templates = [],
+  inspectors = [],
+}: {
+  initial: InspectionDto[];
+  role: UserRole;
+  vehicles?: VehicleDto[];
+  templates?: ChecklistTemplateDto[];
+  inspectors?: UserDto[];
+}) {
   const api = browserApi();
+  const qc = useQueryClient();
+  const canAssign = can(role, "assignInspections");
   const [filters, setFilters] = useState<FiltersState>({});
+  const [creating, setCreating] = useState(false);
 
   const { data } = useQuery({
     queryKey: ["inspections", filters],
     queryFn: () => api.inspections.list(filters),
     placeholderData: { items: initial, nextCursor: null },
+  });
+
+  const vehicleMap = new Map(vehicles.map((v) => [v.id, v]));
+  const inspectorMap = new Map(inspectors.map((u) => [u.id, u]));
+
+  const createMut = useMutation({
+    mutationFn: (input: CreateInspectionInput) => api.base.inspections.create(input),
+    onSuccess: () => {
+      setCreating(false);
+      qc.invalidateQueries({ queryKey: ["inspections"] });
+    },
   });
 
   const items = data?.items ?? initial;
@@ -28,6 +64,17 @@ export function InspectionsList({ initial }: { initial: InspectionDto[] }) {
       <PageHeader
         title="Vistorias"
         description="Acompanhe todas as vistorias e seus respectivos status."
+        actions={
+          canAssign && (
+            <Button
+              label="Nova vistoria"
+              onPress={() => {
+                createMut.reset();
+                setCreating(true);
+              }}
+            />
+          )
+        }
       />
       <div className="rounded-lg border border-border bg-card p-4 shadow-card">
         <InspectionFilters value={filters} onChange={setFilters} />
@@ -48,14 +95,32 @@ export function InspectionsList({ initial }: { initial: InspectionDto[] }) {
             {items.length === 0 && (
               <TableEmpty colSpan={6}>Nenhuma vistoria encontrada com os filtros atuais.</TableEmpty>
             )}
-            {items.map((i) => (
+            {items.map((i) => {
+              const vehicle = vehicleMap.get(i.vehicleId);
+              const inspector = inspectorMap.get(i.inspectorId);
+              return (
               <TR key={i.id}>
-                <TD className="capitalize">{i.type}</TD>
+                <TD>{formatInspectionType(i.type)}</TD>
                 <TD>
                   <StatusChip status={i.status}>{formatInspectionStatus(i.status)}</StatusChip>
                 </TD>
-                <TD className="font-mono text-xs text-muted-foreground">{i.vehicleId}</TD>
-                <TD className="font-mono text-xs text-muted-foreground">{i.inspectorId}</TD>
+                <TD>
+                  {vehicle ? (
+                    <span>
+                      <span className="font-mono font-medium">{vehicle.plate}</span>
+                      <span className="text-muted-foreground"> · {vehicle.model}</span>
+                    </span>
+                  ) : (
+                    <span className="font-mono text-xs text-muted-foreground">{i.vehicleId}</span>
+                  )}
+                </TD>
+                <TD>
+                  {inspector ? (
+                    inspector.name
+                  ) : (
+                    <span className="font-mono text-xs text-muted-foreground">{i.inspectorId}</span>
+                  )}
+                </TD>
                 <TD className="text-muted-foreground">{formatDate(i.createdAt)}</TD>
                 <TD className="text-right">
                   <Link
@@ -66,10 +131,24 @@ export function InspectionsList({ initial }: { initial: InspectionDto[] }) {
                   </Link>
                 </TD>
               </TR>
-            ))}
+              );
+            })}
           </TBody>
         </Table>
       </TableContainer>
+
+      {canAssign && (
+        <InspectionFormDialog
+          open={creating}
+          onClose={() => setCreating(false)}
+          onSubmit={(input) => createMut.mutate(input)}
+          pending={createMut.isPending}
+          error={createMut.isError ? "Não foi possível criar a vistoria. Tente novamente." : null}
+          vehicles={vehicles}
+          templates={templates}
+          inspectors={inspectors}
+        />
+      )}
     </div>
   );
 }

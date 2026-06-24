@@ -8,6 +8,7 @@ import {
   auditInput,
   paginationQuerySchema,
   pageSchema,
+  userDto,
 } from "@vistoria/contracts";
 import { requireRole } from "../../core/auth/require-role.js";
 import { requireTenant } from "../../core/auth/require-tenant.js";
@@ -33,7 +34,8 @@ export async function inspectionRoutes(app: FastifyInstance): Promise<void> {
     async (request, reply) => {
       const tenantId = requireTenant(request);
       const dto = await service.create(request.tx, tenantId, request.body);
-      reply.status(201).send(dto);
+      reply.code(201);
+      return dto;
     },
   );
 
@@ -55,6 +57,15 @@ export async function inspectionRoutes(app: FastifyInstance): Promise<void> {
         },
         q,
       );
+    },
+  );
+
+  r.get(
+    "/inspectors",
+    { preHandler: manage, schema: { response: { 200: z.object({ items: z.array(userDto) }) } } },
+    async (request) => {
+      const tenantId = requireTenant(request);
+      return service.assignableInspectors(request.tx, tenantId);
     },
   );
 

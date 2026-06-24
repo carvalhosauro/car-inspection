@@ -1,4 +1,4 @@
-import type { InspectionStatus } from "@vistoria/contracts";
+import type { InspectionStatus, InspectionType } from "@vistoria/contracts";
 
 export function formatDate(iso: string | null | undefined): string {
   if (!iso) return "—";
@@ -22,4 +22,14 @@ const STATUS_LABELS: Record<InspectionStatus, string> = {
 
 export function formatInspectionStatus(status: InspectionStatus): string {
   return STATUS_LABELS[status];
+}
+
+const TYPE_LABELS: Record<InspectionType, string> = {
+  retirada: "Retirada",
+  devolucao: "Devolução",
+  periodica: "Periódica",
+};
+
+export function formatInspectionType(type: InspectionType): string {
+  return TYPE_LABELS[type];
 }
